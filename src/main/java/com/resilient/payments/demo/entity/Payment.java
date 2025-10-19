@@ -1,12 +1,14 @@
 package com.resilient.payments.demo.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.sql.Timestamp;
 
 
 @Entity
 @Table(name = "payments",schema = "payments")
+@Data
 public class Payment {
 
     @Id
@@ -40,4 +42,7 @@ public class Payment {
 
     @Column(name = "status", nullable = false, length = 50)
     private String status;
+
+    @Column(name = "amount", nullable = false)
+    private Double amount;
 }
