@@ -1,5 +1,4 @@
 {
-  "switchReference": "swx_{{randomValue length=6 type='ALPHANUMERIC'}}",
   "status": "FAILED",
   "message": "Payment Switch is facing downtime at the moment",
   "timestamp": "{{now format='yyyy-MM-dd HH:mm:ss.SSS'}}",

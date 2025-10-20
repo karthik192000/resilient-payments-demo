@@ -1,5 +1,4 @@
 {
-  "switchReference": "swx_{{randomValue length=6 type='ALPHANUMERIC'}}",
   "status": "SUCCESS",
   "timestamp": "{{now format='yyyy-MM-dd HH:mm:ss.SSS'}}",
   "message": "Payment processed successfully"

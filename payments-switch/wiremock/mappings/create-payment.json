@@ -1,7 +1,7 @@
 {
   "mappings": [
     {
-      "scenarioName": "payments-switch-flow",
+      "scenarioName": "payment-switch-flow",
       "requiredScenarioState": "Started",
       "newScenarioState": "Second Attempt",
       "request": {
@@ -17,7 +17,8 @@
         "status": 500,
         "bodyFileName": "paymentFailure.json",
         "headers": {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "switch-reference": "{{#if (jsonPath request.body '$.switchReference')}}{{jsonPath request.body '$.switchReference'}}{{else}}swx_{{randomValue length=6 type='ALPHANUMERIC'}}{{/if}}"
         },
         "fixedDelayMilliseconds": 500
       }
@@ -39,7 +40,8 @@
         "status": 503,
         "bodyFileName": "paymentSwitchUnavailable.json",
         "headers": {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "switch-reference": "{{#if (jsonPath request.body '$.switchReference')}}{{jsonPath request.body '$.switchReference'}}{{else}}swx_{{randomValue length=6 type='ALPHANUMERIC'}}{{/if}}"
         },
         "fixedDelayMilliseconds": 500
       }
@@ -61,7 +63,8 @@
         "status": 429,
         "bodyFileName": "paymentSwitchTooManyRequests.json",
         "headers": {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "switch-reference": "{{#if (jsonPath request.body '$.switchReference')}}{{jsonPath request.body '$.switchReference'}}{{else}}swx_{{randomValue length=6 type='ALPHANUMERIC'}}{{/if}}"
         },
         "fixedDelayMilliseconds": 500
       }
@@ -82,7 +85,8 @@
         "status": 200,
         "bodyFileName": "paymentSuccess.json",
         "headers": {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "switch-reference": "{{#if (jsonPath request.body '$.switchReference')}}{{jsonPath request.body '$.switchReference'}}{{else}}swx_{{randomValue length=6 type='ALPHANUMERIC'}}{{/if}}"
         },
         "fixedDelayMilliseconds": 500
       }

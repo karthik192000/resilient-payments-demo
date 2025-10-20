@@ -1,3 +1,3 @@
 FROM wiremock/wiremock:3.9.1
 COPY wiremock /home/wiremock
-CMD ["--port", "8089","--verbose","--global-response-templating"]
+CMD ["--port", "8089","--verbose","--global-response-templating","--local-response-templating"]
