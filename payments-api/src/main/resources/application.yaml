@@ -8,3 +8,7 @@ spring:
     username: postgres
     password: admin@123
     driver-class-name: org.postgresql.Driver
+
+api:
+  payments:
+    switch: http://localhost:8089/api/v1/payments

@@ -1,0 +1,19 @@
+{
+  "request": {
+    "method": "POST",
+    "url": "/api/v1/payments",
+    "bodyPatterns": [
+      {
+        "matchesJsonPath": "$[?(@.amount > 0)]"
+      }
+    ]
+  },
+  "response": {
+    "status": 201,
+    "bodyFileName": "paymentSuccess.json",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "fixedDelayMilliseconds": 500
+  }
+}
