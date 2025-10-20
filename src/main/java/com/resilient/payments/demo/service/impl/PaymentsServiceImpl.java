@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.Objects;
 
 @Service
@@ -35,6 +37,8 @@ public class PaymentsServiceImpl implements PaymentsService {
             if(Objects.nonNull(payment)){
                 payment.setPaymentReference(paymentReference);
                 payment.setStatus(PaymentStatus.RECEIVED.getStatus());
+                payment.setCreatedDt(Timestamp.from(Instant.now()));
+                payment.setRetries(0);
                 Payment savedPayment = paymentsDao.createPayment(payment);
                 if(Objects.nonNull(savedPayment)){
                     paymentResponse =  paymentsMapper.map(savedPayment);

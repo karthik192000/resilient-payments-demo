@@ -16,37 +16,36 @@ public class Payment {
     @Column(name = "paymentid")
     private Long paymentId;
 
-    @Column(name = "paymentreference", nullable = false, length = 255)
+    @Column(name = "paymentreference")
     private String paymentReference;
 
-    @Column(name = "sendername", nullable = false, length = 255)
+    @Column(name = "sendername")
     private String senderName;
 
-    @Column(name = "senderaccountnumber", nullable = false)
+    @Column(name = "senderaccountnumber")
     private Integer senderAccountNumber;
 
-    @Column(name = "receivername", nullable = false, length = 255)
+    @Column(name = "receivername")
     private String receiverName;
 
-    @Column(name = "receiveraccountnumber", nullable = false)
+    @Column(name = "receiveraccountnumber")
     private Integer receiverAccountNumber;
 
-    @Column(name = "switchreference", nullable = false, length = 255)
+    @Column(name = "switchreference")
     private String switchReference;
 
-    @Column(name = "createddt", nullable = false)
+    @Column(name = "createddt")
     private Timestamp createdDt;
 
-    @Column(name = "updateddt", nullable = false)
+    @Column(name = "updateddt")
     private Timestamp updatedDt;
 
-    @Column(name = "status", nullable = false, length = 50)
+    @Column(name = "status")
     private String status;
 
-    @Column(name = "amount", nullable = false)
+    @Column(name = "amount")
     private Double amount;
 
-
-    @Column(name = "retries", nullable = false)
+    @Column(name = "retries")
     private Integer retries;
 }
