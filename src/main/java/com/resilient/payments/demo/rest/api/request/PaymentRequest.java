@@ -10,11 +10,11 @@ public class PaymentRequest {
 
     private String senderName;
 
-    private String senderAccountNumber;
+    private Integer senderAccountNumber;
 
     private String receiverName;
 
-    private String receiverAccountNumber;
+    private Integer receiverAccountNumber;
 
     private Double amount;
 

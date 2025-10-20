@@ -7,7 +7,8 @@ import lombok.Getter;
 public enum PaymentStatus {
     PENDING("PENDING"),
     COMPLETED("COMPLETED"),
-    FAILED("FAILED");
+    FAILED("FAILED"),
+    RECEIVED("RECEIVED");
 
     private final String status;
 
