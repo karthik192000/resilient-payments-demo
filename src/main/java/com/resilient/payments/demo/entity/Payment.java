@@ -45,4 +45,8 @@ public class Payment {
 
     @Column(name = "amount", nullable = false)
     private Double amount;
+
+
+    @Column(name = "retries", nullable = false)
+    private Integer retries;
 }
