@@ -1,0 +1,10 @@
+{
+  "switchReference": "swx_{{randomValue length=6 type='ALPHANUMERIC'}}",
+  "status": "FAILED",
+  "message": "An unexpected error occurred while processing the payment. Please try again later.",
+  "timestamp": "{{now format='yyyy-MM-dd HH:mm:ss.SSS'}}",
+  "errorDetails": {
+    "errorCode": "SYSTEM_ERROR",
+    "errorMessage": "An unexpected error occurred while processing the payment."
+  }
+}

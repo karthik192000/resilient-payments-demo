@@ -1,19 +1,91 @@
 {
-  "request": {
-    "method": "POST",
-    "url": "/api/v1/payments",
-    "bodyPatterns": [
-      {
-        "matchesJsonPath": "$[?(@.amount > 0)]"
+  "mappings": [
+    {
+      "scenarioName": "payments-switch-flow",
+      "requiredScenarioState": "Started",
+      "newScenarioState": "Second Attempt",
+      "request": {
+        "method": "POST",
+        "url": "/api/v1/payments",
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": "$[?(@.amount > 0)]"
+          }
+        ]
+      },
+      "response": {
+        "status": 500,
+        "bodyFileName": "paymentFailure.json",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "fixedDelayMilliseconds": 500
       }
-    ]
-  },
-  "response": {
-    "status": 201,
-    "bodyFileName": "paymentSuccess.json",
-    "headers": {
-      "Content-Type": "application/json"
     },
-    "fixedDelayMilliseconds": 500
-  }
+    {
+      "scenarioName": "payment-switch-flow",
+      "requiredScenarioState": "Second Attempt",
+      "newScenarioState": "Third Attempt",
+      "request": {
+        "method": "POST",
+        "url": "/api/v1/payments",
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": "$[?(@.amount > 0)]"
+          }
+        ]
+      },
+      "response": {
+        "status": 503,
+        "bodyFileName": "paymentSwitchUnavailable.json",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "fixedDelayMilliseconds": 500
+      }
+    },
+    {
+      "scenarioName": "payment-switch-flow",
+      "requiredScenarioState": "Third Attempt",
+      "newScenarioState": "Completed",
+      "request": {
+        "method": "POST",
+        "url": "/api/v1/payments",
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": "$[?(@.amount > 0)]"
+          }
+        ]
+      },
+      "response": {
+        "status": 429,
+        "bodyFileName": "paymentSwitchTooManyRequests.json",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "fixedDelayMilliseconds": 500
+      }
+    },
+    {
+      "scenarioName": "payment-switch-flow",
+      "requiredScenarioState": "Completed",
+      "request": {
+        "method": "POST",
+        "url": "/api/v1/payments",
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": "$[?(@.amount > 0)]"
+          }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "paymentSuccess.json",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "fixedDelayMilliseconds": 500
+      }
+    }
+  ]
 }

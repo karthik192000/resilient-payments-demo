@@ -1,0 +1,10 @@
+{
+  "switchReference": "swx_{{randomValue length=6 type='ALPHANUMERIC'}}",
+  "status": "FAILED",
+  "message": "Unable to process payment due to high request volume",
+  "timestamp": "{{now format='yyyy-MM-dd HH:mm:ss.SSS'}}",
+  "errorDetails": {
+    "errorCode": "SYSTEM_ERROR",
+    "errorMessage": "Too many requests to Payment Switch. Please try again later."
+  }
+}
