@@ -1,11 +1,15 @@
 package com.resilient.payments.demo.service.impl;
 
+import com.resilient.payments.demo.adapter.PaymentsSwitchAdapter;
 import com.resilient.payments.demo.dao.PaymentsDao;
 import com.resilient.payments.demo.entity.Payment;
 import com.resilient.payments.demo.enums.PaymentStatus;
 import com.resilient.payments.demo.mappers.PaymentsMapper;
+import com.resilient.payments.demo.mappers.PaymentsSwitchMapper;
 import com.resilient.payments.demo.rest.api.request.PaymentRequest;
+import com.resilient.payments.demo.rest.api.request.PaymentsSwitchRequest;
 import com.resilient.payments.demo.rest.api.response.PaymentResponse;
+import com.resilient.payments.demo.rest.api.response.PaymentsSwitchResponse;
 import com.resilient.payments.demo.service.PaymentsService;
 import com.resilient.payments.demo.util.PaymentsUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +31,12 @@ public class PaymentsServiceImpl implements PaymentsService {
     @Autowired
     PaymentsMapper paymentsMapper;
 
+    @Autowired
+    PaymentsSwitchMapper paymentsSwitchMapper;
+
+    @Autowired
+    PaymentsSwitchAdapter paymentsSwitchAdapter;
+
     @Override
     public PaymentResponse execute(PaymentRequest paymentRequest) {
         log.info("PaymentsServiceImpl.execute called with request: {}", paymentRequest);
@@ -40,8 +50,17 @@ public class PaymentsServiceImpl implements PaymentsService {
                 payment.setCreatedDt(Timestamp.from(Instant.now()));
                 payment.setRetries(0);
                 Payment savedPayment = paymentsDao.createPayment(payment);
-                if(Objects.nonNull(savedPayment)){
-                    paymentResponse =  paymentsMapper.map(savedPayment);
+                PaymentsSwitchRequest paymentsSwitchRequest = paymentsSwitchMapper.map(paymentRequest);
+                PaymentsSwitchResponse paymentsSwitchResponse = paymentsSwitchAdapter.callPaymentsSwitch(paymentsSwitchRequest);
+                if(Objects.nonNull(paymentsSwitchResponse) && StringUtils.hasText(paymentsSwitchResponse.getStatus())){
+                    String status = paymentsSwitchResponse.getStatus().equals("SUCCESS") ? PaymentStatus.COMPLETED.getStatus() : PaymentStatus.PENDING.getStatus();
+                    savedPayment.setStatus(status);
+                    savedPayment.setUpdatedDt(Timestamp.from(Instant.now()));
+                    savedPayment.setSwitchReference(paymentsSwitchResponse.getSwitchReference());
+                    Payment updatedPayment = paymentsDao.updatePayment(savedPayment);
+                    if(Objects.nonNull(updatedPayment)){
+                        paymentResponse =  paymentsMapper.map(updatedPayment);
+                    }
                 }
             }
 
