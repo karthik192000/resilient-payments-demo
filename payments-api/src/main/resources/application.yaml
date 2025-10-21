@@ -21,9 +21,7 @@ resilience4j:
       payments-switch:
         max-attempts: 3
         wait-duration: 500ms
-        retry-exceptions:
-          - org.springframework.web.client.HttpServerErrorException
-          - org.springframework.web.client.HttpClientErrorException
+        retry-predicate: com.resilient.payments.demo.resilience.PaymentsRetryPredicate
 
 
 payment:

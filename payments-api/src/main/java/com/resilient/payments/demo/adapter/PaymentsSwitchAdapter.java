@@ -15,8 +15,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import static com.resilient.payments.demo.constants.PaymentConstants.SWITCH_REFERENCE;
 
 
 @Component
@@ -48,15 +51,13 @@ public class PaymentsSwitchAdapter {
                paymentsSwitchResponse = response.getBody();
            }
         }
-        catch (HttpClientErrorException | HttpServerErrorException ex) {
-            log.error("HttpClientErrorException in PaymentsSwitchAdapter.callPaymentsSwitch: ", ex);
-            HttpHeaders headers = ex.getResponseHeaders();
-            String switchReference = headers.getFirst("switch-reference");
-            paymentsSwitchRequest.setSwitchReference(switchReference);
-            throw ex;
-        }
         catch (Exception ex){
-            log.error("Exception in PaymentsSwitchAdapter.callPaymentsSwitch: ", ex);
+            log.error("Exception in PaymentsSwitchAdapter.executePayment: ", ex);
+            if(ex instanceof RestClientResponseException restException){
+                HttpHeaders headers = restException.getResponseHeaders();
+                String switchReference = headers.getFirst(SWITCH_REFERENCE);
+                paymentsSwitchRequest.setSwitchReference(switchReference);
+            }
             throw ex;
         }
         return paymentsSwitchResponse;
