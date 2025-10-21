@@ -46,9 +46,6 @@ public class Payment {
     @Column(name = "amount")
     private Double amount;
 
-    @Column(name = "retries")
-    private Integer retries;
-
     @Column(name = "finalstatusdt")
     private Timestamp finalstatusdt;
 

@@ -12,6 +12,7 @@ spring:
 api:
   payments:
     switch: http://localhost:8089/api/v1/payments
+    final-status: http://localhost:8089/api/v1/payments/final-status/{switchReference}
 
 
 resilience4j:

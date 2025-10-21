@@ -28,15 +28,9 @@ public class PaymentsReconService {
     PaymentsRepository paymentsRepository;
 
     @Autowired
-    JobScheduler jobScheduler;
-
-    @Autowired
     PaymentsSwitchAdapter paymentsSwitchAdapter;
 
-    @Value("${payment.recon.job.delay.seconds:10}")
-    private Long paymentReconJobDelaySeconds;
-
-    public void getAndUpdatePaymentStatusFromSwitch(Long paymentId,String switchReference){
+    public void getAndUpdateFinalPaymentStatusFromSwitch(Long paymentId,String switchReference){
         Optional<Payment> paymentOptional = paymentsRepository.findById(paymentId);
         if(paymentOptional.isPresent()){
             Payment payment = paymentOptional.get();
@@ -49,13 +43,6 @@ public class PaymentsReconService {
                 paymentsRepository.save(payment);
             }
         }
-    }
-
-
-
-    public String enqueueJob(Long paymentId, String switchReference){
-        JobId jobId =  jobScheduler.schedule(Instant.now().plus(paymentReconJobDelaySeconds, ChronoUnit.SECONDS),() -> this.getAndUpdatePaymentStatusFromSwitch(paymentId,switchReference));
-        return jobId.toString();
     }
 
 }

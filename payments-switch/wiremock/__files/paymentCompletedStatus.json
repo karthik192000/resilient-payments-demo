@@ -1,0 +1,5 @@
+{
+  "switchReference": "{{request.path.[4]}}",
+  "status": "COMPLETED",
+  "message": "Payment processed successfully"
+}

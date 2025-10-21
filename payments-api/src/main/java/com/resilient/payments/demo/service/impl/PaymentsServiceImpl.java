@@ -4,6 +4,7 @@ import com.resilient.payments.demo.adapter.PaymentsSwitchAdapter;
 import com.resilient.payments.demo.dao.PaymentsDao;
 import com.resilient.payments.demo.entity.Payment;
 import com.resilient.payments.demo.enums.PaymentStatus;
+import com.resilient.payments.demo.job.PaymentsReconJob;
 import com.resilient.payments.demo.mappers.PaymentsMapper;
 import com.resilient.payments.demo.mappers.PaymentsSwitchMapper;
 import com.resilient.payments.demo.recon.PaymentsReconService;
@@ -37,10 +38,8 @@ public class PaymentsServiceImpl implements PaymentsService {
 
     @Autowired
     PaymentsSwitchAdapter paymentsSwitchAdapter;
-
-
     @Autowired
-    PaymentsReconService paymentsReconService;
+    PaymentsReconJob paymentsReconJob;
 
     @Override
     public PaymentResponse execute(PaymentRequest paymentRequest) {
@@ -53,7 +52,6 @@ public class PaymentsServiceImpl implements PaymentsService {
                 payment.setPaymentReference(paymentReference);
                 payment.setStatus(PaymentStatus.RECEIVED.getStatus());
                 payment.setCreatedDt(Timestamp.from(Instant.now()));
-                payment.setRetries(0);
                 Payment savedPayment = paymentsDao.createPayment(payment);
                 PaymentsSwitchRequest paymentsSwitchRequest = paymentsSwitchMapper.map(paymentRequest);
                 PaymentsSwitchResponse paymentsSwitchResponse = paymentsSwitchAdapter.executePayment(paymentsSwitchRequest);
@@ -63,7 +61,7 @@ public class PaymentsServiceImpl implements PaymentsService {
                     savedPayment.setUpdatedDt(Timestamp.from(Instant.now()));
                     savedPayment.setSwitchReference(paymentsSwitchResponse.getSwitchReference());
                     if(paymentsSwitchResponse.isRecon()){
-                       String jobId =  paymentsReconService.enqueueJob(payment.getPaymentId(),paymentsSwitchResponse.getSwitchReference());
+                       String jobId =  paymentsReconJob.enqueueJob(payment.getPaymentId(),paymentsSwitchResponse.getSwitchReference());
                        payment.setReconjobid(jobId);
                     }
                     Payment updatedPayment = paymentsDao.updatePayment(payment);

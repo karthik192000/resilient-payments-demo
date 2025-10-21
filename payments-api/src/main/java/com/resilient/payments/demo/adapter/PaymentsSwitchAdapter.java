@@ -16,8 +16,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.Objects;
 
 @Component
 @Slf4j
@@ -33,6 +33,9 @@ public class PaymentsSwitchAdapter {
 
     @Value("${api.payments.switch}")
     private String paymentsSwitchAPI;
+
+    @Value("${api.payments.final-status}")
+    private String paymentsFinalStatusAPI;
 
 
     @Retry(name = "payments-switch",fallbackMethod = "fallbackOnRetryFailure")
@@ -72,8 +75,21 @@ public class PaymentsSwitchAdapter {
 
 
     public PaymentsSwitchResponse fetchFinalPaymentStatus(String switchReference){
-
-        return null;
+        log.info("Fetching final payment status from switch for switchReference: {}", switchReference);
+        PaymentsSwitchResponse paymentsSwitchResponse = null;
+        try{
+            String finalStatusUrl = UriComponentsBuilder.fromUriString(paymentsFinalStatusAPI)
+                    .buildAndExpand(switchReference)
+                    .toUriString();
+            ResponseEntity<PaymentsSwitchResponse> response =  restTemplate.exchange(finalStatusUrl, HttpMethod.GET,null, PaymentsSwitchResponse.class);
+            if (response.getStatusCode().is2xxSuccessful()){
+                paymentsSwitchResponse = response.getBody();
+            }
+        }
+        catch (Exception ex){
+            log.error("Exception in PaymentsSwitchAdapter.fetchFinalPaymentStatus: ", ex);
+        }
+        return paymentsSwitchResponse;
 
     }
 
