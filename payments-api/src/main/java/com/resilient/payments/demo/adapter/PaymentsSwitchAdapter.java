@@ -3,6 +3,7 @@ package com.resilient.payments.demo.adapter;
 
 import com.resilient.payments.demo.rest.api.request.PaymentsSwitchRequest;
 import com.resilient.payments.demo.rest.api.response.PaymentsSwitchResponse;
+import io.github.resilience4j.retry.annotation.Retry;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -34,7 +35,7 @@ public class PaymentsSwitchAdapter {
     private String paymentsSwitchAPI;
 
 
-
+    @Retry(name = "payments-switch",fallbackMethod = "fallbackOnRetryFailure")
     public PaymentsSwitchResponse callPaymentsSwitch(PaymentsSwitchRequest paymentsSwitchRequest){
         PaymentsSwitchResponse paymentsSwitchResponse = null;
         HttpEntity<?> entity = new HttpEntity<>(paymentsSwitchRequest);
@@ -49,13 +50,23 @@ public class PaymentsSwitchAdapter {
             HttpHeaders headers = ex.getResponseHeaders();
             String switchReference = headers.getFirst("switch-reference");
             paymentsSwitchRequest.setSwitchReference(switchReference);
+            throw ex;
         }
         catch (Exception ex){
             log.info("Exception in PaymentsSwitchAdapter.callPaymentsSwitch: ", ex);
+            throw ex;
         }
         return paymentsSwitchResponse;
     }
 
+
+    protected PaymentsSwitchResponse fallbackOnRetryFailure(PaymentsSwitchRequest paymentsSwitchRequest, Throwable t) {
+        log.error("All retry attempts exhausted for PaymentsSwitchAdapter.callPaymentsSwitch with switchReference: {}. Exception: {}", paymentsSwitchRequest.getSwitchReference(), t.getMessage());
+        PaymentsSwitchResponse paymentsSwitchResponse = new PaymentsSwitchResponse();
+        paymentsSwitchResponse.setStatus("FAILED");
+        paymentsSwitchResponse.setSwitchReference(paymentsSwitchRequest.getSwitchReference());
+        return paymentsSwitchResponse;
+    }
 
 
 }

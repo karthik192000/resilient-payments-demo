@@ -12,3 +12,14 @@ spring:
 api:
   payments:
     switch: http://localhost:8089/api/v1/payments
+
+
+resilience4j:
+  retry:
+    instances:
+      payments-switch:
+        max-attempts: 3
+        wait-duration: 500ms
+        retry-exceptions:
+          - org.springframework.web.client.HttpServerErrorException
+          - org.springframework.web.client.HttpClientErrorException
