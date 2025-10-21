@@ -36,7 +36,7 @@ public class PaymentsSwitchAdapter {
 
 
     @Retry(name = "payments-switch",fallbackMethod = "fallbackOnRetryFailure")
-    public PaymentsSwitchResponse callPaymentsSwitch(PaymentsSwitchRequest paymentsSwitchRequest){
+    public PaymentsSwitchResponse executePayment(PaymentsSwitchRequest paymentsSwitchRequest){
         PaymentsSwitchResponse paymentsSwitchResponse = null;
         HttpEntity<?> entity = new HttpEntity<>(paymentsSwitchRequest);
         try{
@@ -46,14 +46,14 @@ public class PaymentsSwitchAdapter {
            }
         }
         catch (HttpClientErrorException | HttpServerErrorException ex) {
-            log.info("HttpClientErrorException in PaymentsSwitchAdapter.callPaymentsSwitch: ", ex);
+            log.error("HttpClientErrorException in PaymentsSwitchAdapter.callPaymentsSwitch: ", ex);
             HttpHeaders headers = ex.getResponseHeaders();
             String switchReference = headers.getFirst("switch-reference");
             paymentsSwitchRequest.setSwitchReference(switchReference);
             throw ex;
         }
         catch (Exception ex){
-            log.info("Exception in PaymentsSwitchAdapter.callPaymentsSwitch: ", ex);
+            log.error("Exception in PaymentsSwitchAdapter.callPaymentsSwitch: ", ex);
             throw ex;
         }
         return paymentsSwitchResponse;
@@ -65,7 +65,16 @@ public class PaymentsSwitchAdapter {
         PaymentsSwitchResponse paymentsSwitchResponse = new PaymentsSwitchResponse();
         paymentsSwitchResponse.setStatus("FAILED");
         paymentsSwitchResponse.setSwitchReference(paymentsSwitchRequest.getSwitchReference());
+        paymentsSwitchResponse.setRecon(true);
         return paymentsSwitchResponse;
+    }
+
+
+
+    public PaymentsSwitchResponse fetchFinalPaymentStatus(String switchReference){
+
+        return null;
+
     }
 
 

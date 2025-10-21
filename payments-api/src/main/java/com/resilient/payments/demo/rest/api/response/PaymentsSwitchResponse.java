@@ -16,4 +16,6 @@ public class PaymentsSwitchResponse {
     private String status;
 
     private String timestamp;
+
+    private boolean recon;
 }

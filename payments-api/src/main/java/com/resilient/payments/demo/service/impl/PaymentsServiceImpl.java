@@ -6,6 +6,7 @@ import com.resilient.payments.demo.entity.Payment;
 import com.resilient.payments.demo.enums.PaymentStatus;
 import com.resilient.payments.demo.mappers.PaymentsMapper;
 import com.resilient.payments.demo.mappers.PaymentsSwitchMapper;
+import com.resilient.payments.demo.recon.PaymentsReconService;
 import com.resilient.payments.demo.rest.api.request.PaymentRequest;
 import com.resilient.payments.demo.rest.api.request.PaymentsSwitchRequest;
 import com.resilient.payments.demo.rest.api.response.PaymentResponse;
@@ -37,6 +38,10 @@ public class PaymentsServiceImpl implements PaymentsService {
     @Autowired
     PaymentsSwitchAdapter paymentsSwitchAdapter;
 
+
+    @Autowired
+    PaymentsReconService paymentsReconService;
+
     @Override
     public PaymentResponse execute(PaymentRequest paymentRequest) {
         log.info("PaymentsServiceImpl.execute called with request: {}", paymentRequest);
@@ -51,13 +56,17 @@ public class PaymentsServiceImpl implements PaymentsService {
                 payment.setRetries(0);
                 Payment savedPayment = paymentsDao.createPayment(payment);
                 PaymentsSwitchRequest paymentsSwitchRequest = paymentsSwitchMapper.map(paymentRequest);
-                PaymentsSwitchResponse paymentsSwitchResponse = paymentsSwitchAdapter.callPaymentsSwitch(paymentsSwitchRequest);
+                PaymentsSwitchResponse paymentsSwitchResponse = paymentsSwitchAdapter.executePayment(paymentsSwitchRequest);
                 if(Objects.nonNull(paymentsSwitchResponse) && StringUtils.hasText(paymentsSwitchResponse.getStatus())){
                     String status = paymentsSwitchResponse.getStatus().equals("SUCCESS") ? PaymentStatus.COMPLETED.getStatus() : PaymentStatus.PENDING.getStatus();
                     savedPayment.setStatus(status);
                     savedPayment.setUpdatedDt(Timestamp.from(Instant.now()));
                     savedPayment.setSwitchReference(paymentsSwitchResponse.getSwitchReference());
-                    Payment updatedPayment = paymentsDao.updatePayment(savedPayment);
+                    if(paymentsSwitchResponse.isRecon()){
+                       String jobId =  paymentsReconService.enqueueJob(payment.getPaymentId(),paymentsSwitchResponse.getSwitchReference());
+                       payment.setReconjobid(jobId);
+                    }
+                    Payment updatedPayment = paymentsDao.updatePayment(payment);
                     if(Objects.nonNull(updatedPayment)){
                         paymentResponse =  paymentsMapper.map(updatedPayment);
                     }

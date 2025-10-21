@@ -23,3 +23,10 @@ resilience4j:
         retry-exceptions:
           - org.springframework.web.client.HttpServerErrorException
           - org.springframework.web.client.HttpClientErrorException
+
+
+payment:
+  recon:
+    job:
+      delay:
+        seconds: 10

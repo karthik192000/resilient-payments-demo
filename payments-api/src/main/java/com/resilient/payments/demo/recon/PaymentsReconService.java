@@ -1,0 +1,61 @@
+package com.resilient.payments.demo.recon;
+
+import com.resilient.payments.demo.adapter.PaymentsSwitchAdapter;
+import com.resilient.payments.demo.entity.Payment;
+import com.resilient.payments.demo.repository.PaymentsRepository;
+import com.resilient.payments.demo.rest.api.response.PaymentsSwitchResponse;
+import lombok.extern.slf4j.Slf4j;
+import org.jobrunr.jobs.JobId;
+import org.jobrunr.scheduling.JobScheduler;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+
+
+@Service
+@Slf4j
+public class PaymentsReconService {
+
+
+    @Autowired
+    PaymentsRepository paymentsRepository;
+
+    @Autowired
+    JobScheduler jobScheduler;
+
+    @Autowired
+    PaymentsSwitchAdapter paymentsSwitchAdapter;
+
+    @Value("${payment.recon.job.delay.seconds:10}")
+    private Long paymentReconJobDelaySeconds;
+
+    public void getAndUpdatePaymentStatusFromSwitch(Long paymentId,String switchReference){
+        Optional<Payment> paymentOptional = paymentsRepository.findById(paymentId);
+        if(paymentOptional.isPresent()){
+            Payment payment = paymentOptional.get();
+            // Simulate fetching status from switch using switchReference
+            PaymentsSwitchResponse paymentsSwitchResponse = paymentsSwitchAdapter.fetchFinalPaymentStatus(switchReference);
+            if(Objects.nonNull(paymentsSwitchResponse)) {
+                String status = paymentsSwitchResponse.getStatus();
+                payment.setStatus(status);
+                payment.setFinalstatusdt(Timestamp.from(Instant.now()));
+                paymentsRepository.save(payment);
+            }
+        }
+    }
+
+
+
+    public String enqueueJob(Long paymentId, String switchReference){
+        JobId jobId =  jobScheduler.schedule(Instant.now().plus(paymentReconJobDelaySeconds, ChronoUnit.SECONDS),() -> this.getAndUpdatePaymentStatusFromSwitch(paymentId,switchReference));
+        return jobId.toString();
+    }
+
+}

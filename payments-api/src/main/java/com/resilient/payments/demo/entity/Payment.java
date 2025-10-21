@@ -48,4 +48,10 @@ public class Payment {
 
     @Column(name = "retries")
     private Integer retries;
+
+    @Column(name = "finalstatusdt")
+    private Timestamp finalstatusdt;
+
+    @Column(name = "reconjobid")
+    private String reconjobid;
 }
