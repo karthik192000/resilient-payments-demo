@@ -10,6 +10,11 @@ import org.springframework.context.annotation.Configuration;
 public class JobRunrConfig {
 
 
+    /**
+     * Constructor to initialize JobRunr with StorageProvider and ApplicationContext
+     * @param storageProvider
+     * @param applicationContext
+     */
     public JobRunrConfig(StorageProvider storageProvider,ApplicationContext applicationContext) {
         JobRunr.configure()
                 .useJobActivator(applicationContext::getBean)

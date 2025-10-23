@@ -6,6 +6,10 @@ import lombok.Data;
 import java.sql.Timestamp;
 
 
+
+/**
+ * Payment Entity Class
+ */
 @Entity
 @Table(name = "payments",schema = "payments")
 @Data

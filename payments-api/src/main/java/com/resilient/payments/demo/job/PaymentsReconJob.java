@@ -11,6 +11,9 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
 
+/**
+ * * Job class for scheduling payment reconciliation tasks.
+ */
 @Component
 public class PaymentsReconJob {
 
@@ -26,6 +29,12 @@ public class PaymentsReconJob {
     private PaymentsReconService paymentsReconService;
 
 
+    /**
+     * Schedules a reconciliation job to fetch and update the final payment status from the Payments Switch.
+     * @param paymentId
+     * @param switchReference
+     * @return
+     */
     public String enqueueJob(Long paymentId, String switchReference){
         JobId jobId =  jobScheduler.schedule(Instant.now().plus(paymentReconJobDelaySeconds, ChronoUnit.SECONDS),() -> paymentsReconService.getAndUpdateFinalPaymentStatusFromSwitch(paymentId,switchReference));
         return jobId.toString();

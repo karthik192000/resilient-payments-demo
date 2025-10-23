@@ -22,6 +22,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 import static com.resilient.payments.demo.constants.PaymentConstants.SWITCH_REFERENCE;
 
 
+/**
+ * Adapter class to interact with the Payments Switch API.
+ */
 @Component
 @Slf4j
 public class PaymentsSwitchAdapter {
@@ -43,6 +46,13 @@ public class PaymentsSwitchAdapter {
 
     private static final PaymentsRetryPredicate paymentsRetryPredicate = new PaymentsRetryPredicate();
 
+    /**
+     * Executes a payment by calling the Payments Switch API.
+     * Retries on failure based on the defined retry policy.
+     * Includes fallback logic when all retry attempts are exhausted.
+     * @param paymentsSwitchRequest
+     * @return
+     */
     @Retry(name = "payments-switch",fallbackMethod = "fallbackOnRetryFailure")
     public PaymentsSwitchResponse executePayment(PaymentsSwitchRequest paymentsSwitchRequest){
         PaymentsSwitchResponse paymentsSwitchResponse = null;
@@ -66,6 +76,13 @@ public class PaymentsSwitchAdapter {
     }
 
 
+    /**
+     * Fallback method invoked when all retry attempts are exhausted.
+     * @param paymentsSwitchRequest
+     * @param t
+     * @return
+     */
+
     protected PaymentsSwitchResponse fallbackOnRetryFailure(PaymentsSwitchRequest paymentsSwitchRequest, Throwable t) {
         log.error("All retry attempts exhausted for PaymentsSwitchAdapter.callPaymentsSwitch with switchReference: {}. Exception: {}", paymentsSwitchRequest.getSwitchReference(), t.getMessage());
         PaymentsSwitchResponse paymentsSwitchResponse = new PaymentsSwitchResponse();
@@ -76,12 +93,22 @@ public class PaymentsSwitchAdapter {
     }
 
 
+    /**
+     * Determines whether to schedule reconciliation based on the type of exception encountered.
+     * @param t
+     * @return
+     */
+
     private boolean shouldScheduleRecon(Throwable t){
         return paymentsRetryPredicate.test(t);
     }
 
 
-
+    /**
+     * Fetches the final payment status from the Payments Switch using the provided switch reference.
+     * @param switchReference
+     * @return
+     */
     public PaymentsSwitchResponse fetchFinalPaymentStatus(String switchReference){
         log.info("Fetching final payment status from switch for switchReference: {}", switchReference);
         PaymentsSwitchResponse paymentsSwitchResponse = null;

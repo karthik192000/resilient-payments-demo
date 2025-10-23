@@ -4,6 +4,10 @@ package com.resilient.payments.demo.rest.api.request;
 import lombok.Getter;
 import lombok.Setter;
 
+
+/**
+ * * Payment Request DTO
+ */
 @Getter
 @Setter
 public class PaymentRequest {

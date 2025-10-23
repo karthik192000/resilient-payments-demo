@@ -3,6 +3,9 @@ package com.resilient.payments.demo.enums;
 
 import lombok.Getter;
 
+/**
+ * * * Payment Status Enum
+ */
 @Getter
 public enum PaymentStatus {
     PENDING("PENDING"),

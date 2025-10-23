@@ -5,6 +5,10 @@ import org.springframework.web.client.HttpServerErrorException;
 
 import java.util.Set;
 
+
+/**
+ * * * Payment Constants Class
+ */
 public class PaymentConstants {
 
 

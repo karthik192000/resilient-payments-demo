@@ -7,6 +7,10 @@ import static com.resilient.payments.demo.constants.PaymentConstants.PAYMENT_REF
 public class PaymentsUtil {
 
 
+    /**
+     * Generate a unique payment reference
+     * @return
+     */
 
     public static String generatePaymentReference(){
         return PAYMENT_REFERENCE_PREFIX + System.currentTimeMillis();

@@ -12,6 +12,10 @@ public class RestTemplateConfiguration {
     private static RestTemplate restTemplate;
 
 
+    /**
+     * Provides RestTemplate Instance
+     * @return RestTemplate
+     */
 
     @Bean("defaultRestTemplate")
     public RestTemplate getRestTemplateInstance() {

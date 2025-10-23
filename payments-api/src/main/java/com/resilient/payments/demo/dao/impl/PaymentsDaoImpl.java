@@ -15,11 +15,19 @@ public class PaymentsDaoImpl implements PaymentsDao {
     @Autowired
     PaymentsRepository paymentsRepository;
 
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Payment getPayment(Long paymentId) {
         log.info("Fetching payment with id: {}", paymentId);
         return paymentsRepository.findById(paymentId).orElse(null);
     }
+
+    /**
+     * {@inheritDoc}
+     */
 
     @Override
     public Payment createPayment(Payment payment) {
@@ -27,6 +35,10 @@ public class PaymentsDaoImpl implements PaymentsDao {
         return paymentsRepository.save(payment);
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Payment updatePayment(Payment payment) {
         log.info("Updating payment with id: {}", payment.getPaymentId());

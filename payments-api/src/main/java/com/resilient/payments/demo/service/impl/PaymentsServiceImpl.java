@@ -16,11 +16,9 @@ import com.resilient.payments.demo.util.PaymentsUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.Objects;
 
 import static com.resilient.payments.demo.constants.PaymentConstants.SUCCESS;
 
@@ -42,6 +40,9 @@ public class PaymentsServiceImpl implements PaymentsService {
     @Autowired
     PaymentsReconJob paymentsReconJob;
 
+    /**
+     * * {@inheritDoc}
+     */
     @Override
     public PaymentResponse execute(PaymentRequest paymentRequest) {
         log.info("PaymentsServiceImpl.execute called with request: {}", paymentRequest);
@@ -52,7 +53,7 @@ public class PaymentsServiceImpl implements PaymentsService {
             PaymentsSwitchResponse switchResponse = executeSwitch(paymentRequest);
             Payment updatedPayment = updatePaymentWithSwitchResponse(savedPayment, switchResponse);
             if (switchResponse.isRecon()) {
-                enqueueReconciliationJob(updatedPayment, switchResponse.getSwitchReference());
+                scheduleReconciliationJob(updatedPayment, switchResponse.getSwitchReference());
             }
             return paymentsMapper.map(updatedPayment);
         }
@@ -62,6 +63,11 @@ public class PaymentsServiceImpl implements PaymentsService {
         }
     }
 
+    /**
+     * * Prepare Payment entity from PaymentRequest
+     * @param paymentRequest
+     * @return
+     */
 
     private Payment preparePayment(PaymentRequest paymentRequest) {
         Payment payment = paymentsMapper.map(paymentRequest);
@@ -71,10 +77,23 @@ public class PaymentsServiceImpl implements PaymentsService {
         return payment;
     }
 
+    /**
+     * * Execute payment via Payments Switch
+     * @param paymentRequest
+     * @return
+     */
     private PaymentsSwitchResponse executeSwitch(PaymentRequest paymentRequest) {
         PaymentsSwitchRequest switchRequest = paymentsSwitchMapper.map(paymentRequest);
         return paymentsSwitchAdapter.executePayment(switchRequest);
     }
+
+
+    /**
+     * * Update Payment entity based on Payments Switch response
+     * @param payment
+     * @param response
+     * @return
+     */
 
     private Payment updatePaymentWithSwitchResponse(Payment payment, PaymentsSwitchResponse response) {
         String status = response.getStatus().equals(SUCCESS)
@@ -88,7 +107,13 @@ public class PaymentsServiceImpl implements PaymentsService {
         return paymentsDao.updatePayment(payment);
     }
 
-    private void enqueueReconciliationJob(Payment payment, String switchReference) {
+
+    /**
+     *  Schedule reconciliation job if required
+     * @param payment
+     * @param switchReference
+     */
+    private void scheduleReconciliationJob(Payment payment, String switchReference) {
         try {
             String jobId = paymentsReconJob.enqueueJob(payment.getPaymentId(), switchReference);
             payment.setReconjobid(jobId);
