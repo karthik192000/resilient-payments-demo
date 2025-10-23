@@ -34,6 +34,23 @@ You can containerize it using the provided **Dockerfile**.
 
 ---
 
+## 📘 API Documentation
+
+The `payments-api` module exposes a RESTful API to initiate and reconcile payments.  
+All endpoints are documented and testable through **Swagger UI**.
+
+---
+
+### 🔗 Accessing the Docs
+
+Once the application starts, open your browser and visit:
+
+- **Swagger UI:** [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
+- **OpenAPI JSON Spec:** [http://localhost:8080/v3/api-docs](http://localhost:8080/v3/api-docs)
+
+---
+
+
 ## 🔄 Data Flow Diagram
 ![Data Flow Diagram](resources/dfd.png)
 
