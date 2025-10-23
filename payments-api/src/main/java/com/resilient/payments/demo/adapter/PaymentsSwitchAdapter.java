@@ -1,6 +1,8 @@
 package com.resilient.payments.demo.adapter;
 
 
+import com.resilient.payments.demo.enums.PaymentStatus;
+import com.resilient.payments.demo.resilience.PaymentsRetryPredicate;
 import com.resilient.payments.demo.rest.api.request.PaymentsSwitchRequest;
 import com.resilient.payments.demo.rest.api.response.PaymentsSwitchResponse;
 import io.github.resilience4j.retry.annotation.Retry;
@@ -13,8 +15,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -40,6 +40,8 @@ public class PaymentsSwitchAdapter {
     @Value("${api.payments.final-status}")
     private String paymentsFinalStatusAPI;
 
+
+    private static final PaymentsRetryPredicate paymentsRetryPredicate = new PaymentsRetryPredicate();
 
     @Retry(name = "payments-switch",fallbackMethod = "fallbackOnRetryFailure")
     public PaymentsSwitchResponse executePayment(PaymentsSwitchRequest paymentsSwitchRequest){
@@ -67,10 +69,15 @@ public class PaymentsSwitchAdapter {
     protected PaymentsSwitchResponse fallbackOnRetryFailure(PaymentsSwitchRequest paymentsSwitchRequest, Throwable t) {
         log.error("All retry attempts exhausted for PaymentsSwitchAdapter.callPaymentsSwitch with switchReference: {}. Exception: {}", paymentsSwitchRequest.getSwitchReference(), t.getMessage());
         PaymentsSwitchResponse paymentsSwitchResponse = new PaymentsSwitchResponse();
-        paymentsSwitchResponse.setStatus("FAILED");
+        paymentsSwitchResponse.setStatus(PaymentStatus.FAILED.getStatus());
         paymentsSwitchResponse.setSwitchReference(paymentsSwitchRequest.getSwitchReference());
-        paymentsSwitchResponse.setRecon(true);
+        paymentsSwitchResponse.setRecon(shouldScheduleRecon(t));
         return paymentsSwitchResponse;
+    }
+
+
+    private boolean shouldScheduleRecon(Throwable t){
+        return paymentsRetryPredicate.test(t);
     }
 
 

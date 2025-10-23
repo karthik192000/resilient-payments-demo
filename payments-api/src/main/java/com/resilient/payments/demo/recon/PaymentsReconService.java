@@ -5,18 +5,13 @@ import com.resilient.payments.demo.entity.Payment;
 import com.resilient.payments.demo.repository.PaymentsRepository;
 import com.resilient.payments.demo.rest.api.response.PaymentsSwitchResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.jobrunr.jobs.JobId;
-import org.jobrunr.scheduling.JobScheduler;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 
 @Service

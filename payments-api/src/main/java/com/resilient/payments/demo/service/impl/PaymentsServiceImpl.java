@@ -7,7 +7,6 @@ import com.resilient.payments.demo.enums.PaymentStatus;
 import com.resilient.payments.demo.job.PaymentsReconJob;
 import com.resilient.payments.demo.mappers.PaymentsMapper;
 import com.resilient.payments.demo.mappers.PaymentsSwitchMapper;
-import com.resilient.payments.demo.recon.PaymentsReconService;
 import com.resilient.payments.demo.rest.api.request.PaymentRequest;
 import com.resilient.payments.demo.rest.api.request.PaymentsSwitchRequest;
 import com.resilient.payments.demo.rest.api.response.PaymentResponse;
@@ -22,6 +21,8 @@ import org.springframework.util.StringUtils;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Objects;
+
+import static com.resilient.payments.demo.constants.PaymentConstants.SUCCESS;
 
 @Service
 @Slf4j
@@ -44,37 +45,56 @@ public class PaymentsServiceImpl implements PaymentsService {
     @Override
     public PaymentResponse execute(PaymentRequest paymentRequest) {
         log.info("PaymentsServiceImpl.execute called with request: {}", paymentRequest);
-        PaymentResponse paymentResponse = null;
-        try {
-            String paymentReference = PaymentsUtil.generatePaymentReference();
-            Payment payment = paymentsMapper.map(paymentRequest);
-            if(Objects.nonNull(payment)){
-                payment.setPaymentReference(paymentReference);
-                payment.setStatus(PaymentStatus.RECEIVED.getStatus());
-                payment.setCreatedDt(Timestamp.from(Instant.now()));
-                Payment savedPayment = paymentsDao.createPayment(payment);
-                PaymentsSwitchRequest paymentsSwitchRequest = paymentsSwitchMapper.map(paymentRequest);
-                PaymentsSwitchResponse paymentsSwitchResponse = paymentsSwitchAdapter.executePayment(paymentsSwitchRequest);
-                if(Objects.nonNull(paymentsSwitchResponse) && StringUtils.hasText(paymentsSwitchResponse.getStatus())){
-                    String status = paymentsSwitchResponse.getStatus().equals("SUCCESS") ? PaymentStatus.COMPLETED.getStatus() : PaymentStatus.PENDING.getStatus();
-                    savedPayment.setStatus(status);
-                    savedPayment.setUpdatedDt(Timestamp.from(Instant.now()));
-                    savedPayment.setSwitchReference(paymentsSwitchResponse.getSwitchReference());
-                    if(paymentsSwitchResponse.isRecon()){
-                       String jobId =  paymentsReconJob.enqueueJob(payment.getPaymentId(),paymentsSwitchResponse.getSwitchReference());
-                       payment.setReconjobid(jobId);
-                    }
-                    Payment updatedPayment = paymentsDao.updatePayment(payment);
-                    if(Objects.nonNull(updatedPayment)){
-                        paymentResponse =  paymentsMapper.map(updatedPayment);
-                    }
-                }
-            }
 
+        try {
+            Payment payment = preparePayment(paymentRequest);
+            Payment savedPayment = paymentsDao.createPayment(payment);
+            PaymentsSwitchResponse switchResponse = executeSwitch(paymentRequest);
+            Payment updatedPayment = updatePaymentWithSwitchResponse(savedPayment, switchResponse);
+            if (switchResponse.isRecon()) {
+                enqueueReconciliationJob(updatedPayment, switchResponse.getSwitchReference());
+            }
+            return paymentsMapper.map(updatedPayment);
         }
-        catch (Exception ex){
+        catch (Exception ex) {
             log.error("Exception in PaymentsServiceImpl.execute: ", ex);
+            return null;
         }
-        return paymentResponse;
     }
+
+
+    private Payment preparePayment(PaymentRequest paymentRequest) {
+        Payment payment = paymentsMapper.map(paymentRequest);
+        payment.setPaymentReference(PaymentsUtil.generatePaymentReference());
+        payment.setStatus(PaymentStatus.RECEIVED.getStatus());
+        payment.setCreatedDt(Timestamp.from(Instant.now()));
+        return payment;
+    }
+
+    private PaymentsSwitchResponse executeSwitch(PaymentRequest paymentRequest) {
+        PaymentsSwitchRequest switchRequest = paymentsSwitchMapper.map(paymentRequest);
+        return paymentsSwitchAdapter.executePayment(switchRequest);
+    }
+
+    private Payment updatePaymentWithSwitchResponse(Payment payment, PaymentsSwitchResponse response) {
+        String status = response.getStatus().equals(SUCCESS)
+                ? PaymentStatus.COMPLETED.getStatus()
+                : (!response.isRecon() ? PaymentStatus.FAILED.getStatus() : PaymentStatus.PENDING.getStatus());
+
+        payment.setStatus(status);
+        payment.setUpdatedDt(Timestamp.from(Instant.now()));
+        payment.setSwitchReference(response.getSwitchReference());
+
+        return paymentsDao.updatePayment(payment);
+    }
+
+    private void enqueueReconciliationJob(Payment payment, String switchReference) {
+        try {
+            String jobId = paymentsReconJob.enqueueJob(payment.getPaymentId(), switchReference);
+            payment.setReconjobid(jobId);
+        } catch (Exception e) {
+            log.error("Failed to enqueue reconciliation job for paymentId: {}", payment.getPaymentId(), e);
+        }
+    }
+
 }
