@@ -28,6 +28,15 @@ public class PaymentsDaoImpl implements PaymentsDao {
     /**
      * {@inheritDoc}
      */
+    @Override
+    public Payment getPayment(String paymentReference) {
+        log.info("Fetching payment with reference: {}", paymentReference);
+        return paymentsRepository.findByPaymentReference(paymentReference);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
 
     @Override
     public Payment createPayment(Payment payment) {
@@ -44,4 +53,7 @@ public class PaymentsDaoImpl implements PaymentsDao {
         log.info("Updating payment with id: {}", payment.getPaymentId());
         return paymentsRepository.save(payment);
     }
+
+
+
 }

@@ -14,6 +14,14 @@ public interface PaymentsDao {
 
 
     /**
+     * Fetch Payment by Payment Reference
+     * @param paymentReference
+     * @return
+     */
+    public Payment getPayment(String paymentReference);
+
+
+    /**
      * Create Payment based on Payment Object
      * @param payment
      * @return

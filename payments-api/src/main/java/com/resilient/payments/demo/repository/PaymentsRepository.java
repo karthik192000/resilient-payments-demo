@@ -10,4 +10,7 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface PaymentsRepository extends JpaRepository<Payment,Long> {
+
+
+    Payment findByPaymentReference(String paymentReference);
 }

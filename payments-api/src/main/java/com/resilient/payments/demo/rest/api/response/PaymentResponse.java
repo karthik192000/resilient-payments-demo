@@ -18,6 +18,4 @@ public class PaymentResponse {
     String status;
 
     String amount;
-
-    String message;
 }

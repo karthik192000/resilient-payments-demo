@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Objects;
 
 import static com.resilient.payments.demo.constants.PaymentConstants.SUCCESS;
 
@@ -59,8 +60,28 @@ public class PaymentsServiceImpl implements PaymentsService {
         }
         catch (Exception ex) {
             log.error("Exception in PaymentsServiceImpl.execute: ", ex);
-            return null;
         }
+
+        return null;
+
+    }
+
+    /**
+     * * * {@inheritDoc}
+     */
+    @Override
+    public PaymentResponse retrieve(String paymentReference) {
+        log.info("PaymentsServiceImpl.retrieve called with paymentReference: {}", paymentReference);
+        try{
+            Payment payment = paymentsDao.getPayment(paymentReference);
+            if(Objects.nonNull(payment)){
+                return  paymentsMapper.map(payment);
+            }
+        }
+        catch (Exception ex) {
+            log.error("Exception in PaymentsServiceImpl.retrieve: ", ex);
+        }
+        return null;
     }
 
     /**

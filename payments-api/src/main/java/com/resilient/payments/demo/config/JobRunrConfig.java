@@ -6,6 +6,10 @@ import org.jobrunr.storage.StorageProvider;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 
+
+/**
+ * * JobRunr Configuration Class
+ */
 @Configuration
 public class JobRunrConfig {
 

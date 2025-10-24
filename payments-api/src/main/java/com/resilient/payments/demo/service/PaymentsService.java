@@ -15,4 +15,12 @@ public interface PaymentsService {
      * @return
      */
     public PaymentResponse execute(PaymentRequest paymentRequest);
+
+
+    /**
+     * Retrieve Payment based on Payment Reference
+     * @param paymentReference
+     * @return
+     */
+    public PaymentResponse retrieve(String paymentReference);
 }
