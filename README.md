@@ -30,7 +30,42 @@ This project demonstrates how to design **resilient APIs** capable of recovering
 - Randomly simulate transient errors (`429 Too Many Requests`, `503 Service Unavailable`, etc.)
 - Help test retry, fallback, and delay handling in `payments-api`.
 
-You can containerize it using the provided **Dockerfile**.
+---
+## 🐳 Containerizing the Payments Switch WireMock Server
+
+The **Payments Switch WireMock Server** can be easily containerized using Docker for local testing or integration with other services.
+
+### 🧱 Step 1. Build the Docker image
+
+From the `payments-switch` module directory, run the following command to build the image:
+
+```bash
+docker build -t payments-switch .
+```
+
+### Step 2. Run the Docker container
+
+Run the following command to start the WireMock server container:
+
+```bash
+docker run -d -p 8089:8089 --name payments-switch payments-switch
+```
+
+### Step 3. Verify the server is running
+You can verify that the WireMock server is running by accessing the following URL in your browser or using `curl`:
+
+```bash
+http://localhost:8089/__admin/
+```
+
+### ⚙️ About WireMock Admin APIs
+
+WireMock provides a set of built-in **Admin APIs** that allow you to manage mappings, files, and server state at runtime — without rebuilding or restarting the container.
+
+By default, all admin endpoints are available under: ```http://localhost:8089/__admin/```
+
+Refer to the documentation here: [Wiremock Admin API Reference](https://wiremock.org/docs/standalone/admin-api-reference/)
+
 
 ---
 
