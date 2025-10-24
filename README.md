@@ -54,7 +54,7 @@ Once the application starts, open your browser and visit:
 
 
 ## 🔄 Data Flow Diagram
-![Data Flow Diagram](resources/dfd.png)
+![Data Flow Diagram](resources/UML_Sequence_Diagram.png)
 
 
 ## 🧠 Core Frameworks Explained
