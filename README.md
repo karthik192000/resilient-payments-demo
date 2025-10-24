@@ -43,7 +43,7 @@ From the `payments-switch` module directory, run the following command to build 
 docker build -t payments-switch .
 ```
 
-### Step 2. Run the Docker container
+### 🚀 Step 2. Run the Docker container
 
 Run the following command to start the WireMock server container:
 
@@ -51,7 +51,7 @@ Run the following command to start the WireMock server container:
 docker run -d -p 8089:8089 --name payments-switch payments-switch
 ```
 
-### Step 3. Verify the server is running
+### 🧭 Step 3. Verify the server is running
 You can verify that the WireMock server is running by accessing the following URL in your browser or using `curl`:
 
 ```bash
