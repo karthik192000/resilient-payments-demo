@@ -1,0 +1,106 @@
+openapi: 3.0.0
+info:
+  title: Payments Switch API (Wiremock)
+  version: 1.0.0
+  description: ''
+servers:
+  - url: http://localhost:8089
+paths:
+  /api/v1/payments:
+    post:
+      summary: Create Payment
+      tags: []
+      responses:
+        '200':
+          description: Payment created successfully
+          content:
+            application/json:
+              example:
+                {
+                  "status": "SUCCESS",
+                  "timestamp": "2025-10-24 12:23:00",
+                  "message": "Payment processed successfully"
+                }
+        '429':
+          description: Too many requests (rate limiting)
+          content:
+            application/json:
+              example:
+                {
+                  "status": "FAILED",
+                  "message": "Unable to process payment due to high request volume",
+                  "timestamp": "2025-10-24 12:23:00",
+                  "errorDetails": {
+                    "errorCode": "SYSTEM_ERROR",
+                    "errorMessage": "Too many requests to Payment Switch. Please try again later."
+                  }
+                }
+        '503':
+          description: Service unavailable
+          content:
+            application/json:
+              example:
+                {
+                  "status": "FAILED",
+                  "message": "Payment Switch is facing downtime at the moment",
+                  "timestamp": "2025-10-24 12:23:00",
+                  "errorDetails": {
+                    "errorCode": "SYSTEM_ERROR",
+                    "errorMessage": "Payment Switch unavailable. Please try again later."
+                  }
+                }
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              example:
+                {
+                  "status": "FAILED",
+                  "message": "An unexpected error occurred while processing the payment. Please try again later.",
+                  "timestamp": "2025-10-24 12:23:00",
+                  "errorDetails": {
+                    "errorCode": "SYSTEM_ERROR",
+                    "errorMessage": "An unexpected error occurred while processing the payment."
+                  }
+                }
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                senderName:
+                  type: string
+                senderAccountNumber:
+                  type: string
+                receiverName:
+                  type: string
+                receiverAccountNumber:
+                  type: string
+                amount:
+                  type: integer
+                switchReference:
+                  type: string
+  /api/v1/payments/final-status/{switchReference}:
+    get:
+      summary: Get Payment Final Status
+      parameters:
+        - name: switchReference
+          in: path
+          description: Payment Switch identifier
+          required: true
+          schema:
+            type: string
+      tags: []
+      responses:
+        '200':
+          description: Payment final status retrieved successfully
+          content:
+            application/json:
+              example:
+                {
+                  "paymentId": "sw_123",
+                  "status": "COMPLETED",
+                  "completedAt": "2025-10-24T10:20:00Z"
+                }

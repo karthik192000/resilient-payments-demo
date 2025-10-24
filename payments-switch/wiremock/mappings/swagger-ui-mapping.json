@@ -1,0 +1,14 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/swagger-ui.html"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/html",
+      "Access-Control-Allow-Origin": "*"
+    },
+    "bodyFileName": "swagger-ui.html"
+  }
+}
