@@ -36,7 +36,7 @@ You can containerize it using the provided **Dockerfile**.
 
 ## 📘 API Documentation
 
-The `payments-api` module exposes a RESTful API to initiate and reconcile payments.  
+The `payments-api` and `payments-switch`' modules expose  RESTful API(s) to initiate and reconcile and retrieve payment transactions.  
 All endpoints are documented and testable through **Swagger UI**.
 
 ---
