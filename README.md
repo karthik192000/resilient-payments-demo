@@ -45,9 +45,10 @@ All endpoints are documented and testable through **Swagger UI**.
 
 Once the application starts, open your browser and visit:
 
-- **Swagger UI:** [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
+- **Swagger UI(Payments API):** [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
 - **OpenAPI JSON Spec:** [http://localhost:8080/v3/api-docs](http://localhost:8080/v3/api-docs)
 - **Java Docs:** [API Docs](https://karthik192000.github.io/resilient-payments-demo/)
+- **Swagger UI(Payments Switch):**[http://localhost:8089/swagger-ui.html](http://localhost:8089/swagger-ui.html)
 
 ---
 
