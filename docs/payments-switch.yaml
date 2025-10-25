@@ -2,14 +2,14 @@ openapi: 3.0.0
 info:
   title: Payments Switch API (Wiremock)
   version: 1.0.0
-  description: ''
+  description: 'Mock API for Payments Switch using Wiremock'
 servers:
   - url: https://85y0y.wiremockapi.cloud
 paths:
   /api/v1/payments:
     post:
       summary: Create Payment
-      tags: []
+      tags: ['Create Payment']
       responses:
         '200':
           description: Payment created successfully
@@ -92,7 +92,7 @@ paths:
           required: true
           schema:
             type: string
-      tags: []
+      tags: ['Get Payment Final Status']
       responses:
         '200':
           description: Payment final status retrieved successfully
