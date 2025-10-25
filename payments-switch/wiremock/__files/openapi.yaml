@@ -100,7 +100,7 @@ paths:
             application/json:
               example:
                 {
-                  "paymentId": "sw_123",
+                  "switchReference": "sw_123",
                   "status": "COMPLETED",
-                  "completedAt": "2025-10-24T10:20:00Z"
+                  "message": "Payment processed successfully"
                 }
