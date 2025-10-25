@@ -32,7 +32,7 @@ This project demonstrates how to design **resilient APIs** capable of recovering
 
 ---
 ## 🐳 Containerizing the Payments Switch WireMock Server
-The Payments Switch WireMock server is hosted on **WireMock Cloud**. However, for local testing,integration with other services or customization, you can containerize and run it using Docker.
+The Payments Switch WireMock server is hosted on **WireMock Cloud**. However, for local testing or customization, you can containerize and run it using Docker.
 
 You can follow the steps below to build and run the WireMock server in a Docker container.
 ### 🧱 Step 1. Build the Docker image
@@ -82,7 +82,7 @@ Once the application starts, open your browser and visit:
 
 - **Swagger UI(Payments API):** [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
 - **OpenAPI JSON Spec:** [http://localhost:8080/v3/api-docs](http://localhost:8080/v3/api-docs)
-- **Java Docs:** [API Docs](https://karthik192000.github.io/resilient-payments-demo/) **(Under maintenance)**
+- **Java Docs:** [API Docs](https://karthik192000.github.io/resilient-payments-demo/)
 - **Swagger UI (Payments Switch – WireMock Cloud):** [Payments Switch API](https://85y0y.wiremockapi.cloud/swagger-ui.html)
 
 ---
