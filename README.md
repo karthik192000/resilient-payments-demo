@@ -55,7 +55,7 @@ docker run -d -p 8089:8089 --name payments-switch payments-switch
 You can verify that the WireMock server is running by accessing the following URL in your browser or using `curl`:
 
 ```bash
-http://localhost:8089/__admin/
+http://localhost:8089/swagger-ui.html
 ```
 
 ### ⚙️ About WireMock Admin APIs
