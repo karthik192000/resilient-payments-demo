@@ -1,9 +1,12 @@
 package com.resilient.payments.demo.service.impl;
 
+import static com.resilient.payments.demo.constants.PaymentConstants.SUCCESS;
+
 import com.resilient.payments.demo.adapter.PaymentsSwitchAdapter;
 import com.resilient.payments.demo.dao.PaymentsDao;
 import com.resilient.payments.demo.entity.Payment;
 import com.resilient.payments.demo.enums.PaymentStatus;
+import com.resilient.payments.demo.exceptions.PaymentsException;
 import com.resilient.payments.demo.job.PaymentsReconJob;
 import com.resilient.payments.demo.mappers.PaymentsMapper;
 import com.resilient.payments.demo.mappers.PaymentsSwitchMapper;
@@ -13,134 +16,137 @@ import com.resilient.payments.demo.rest.api.response.PaymentResponse;
 import com.resilient.payments.demo.rest.api.response.PaymentsSwitchResponse;
 import com.resilient.payments.demo.service.PaymentsService;
 import com.resilient.payments.demo.util.PaymentsUtil;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Objects;
-
-import static com.resilient.payments.demo.constants.PaymentConstants.SUCCESS;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
 public class PaymentsServiceImpl implements PaymentsService {
 
-    @Autowired
-    PaymentsDao paymentsDao;
+  @Autowired PaymentsDao paymentsDao;
 
-    @Autowired
-    PaymentsMapper paymentsMapper;
+  @Autowired PaymentsMapper paymentsMapper;
 
-    @Autowired
-    PaymentsSwitchMapper paymentsSwitchMapper;
+  @Autowired PaymentsSwitchMapper paymentsSwitchMapper;
 
-    @Autowired
-    PaymentsSwitchAdapter paymentsSwitchAdapter;
-    @Autowired
-    PaymentsReconJob paymentsReconJob;
+  @Autowired PaymentsSwitchAdapter paymentsSwitchAdapter;
+  @Autowired PaymentsReconJob paymentsReconJob;
 
-    /**
-     * * {@inheritDoc}
-     */
-    @Override
-    public PaymentResponse execute(PaymentRequest paymentRequest) {
-        log.info("PaymentsServiceImpl.execute called with request: {}", paymentRequest);
-
-        try {
-            Payment payment = preparePayment(paymentRequest);
-            Payment savedPayment = paymentsDao.createPayment(payment);
-            PaymentsSwitchResponse switchResponse = executeSwitch(paymentRequest);
-            Payment updatedPayment = updatePaymentWithSwitchResponse(savedPayment, switchResponse);
-            if (switchResponse.isRecon()) {
-                scheduleReconciliationJob(updatedPayment, switchResponse.getSwitchReference());
-            }
-            return paymentsMapper.map(updatedPayment);
-        }
-        catch (Exception ex) {
-            log.error("Exception in PaymentsServiceImpl.execute: ", ex);
-        }
-
-        return null;
-
+  /** * {@inheritDoc} */
+  @Override
+  public PaymentResponse execute(PaymentRequest paymentRequest) {
+    MDC.put("paymentReference", paymentRequest.getPaymentReference());
+    log.debug("PaymentsServiceImpl.execute called with request: {}", paymentRequest);
+    try {
+      Payment payment = preparePayment(paymentRequest);
+      Payment savedPayment = paymentsDao.createPayment(payment);
+      PaymentsSwitchResponse switchResponse = executeSwitch(paymentRequest);
+      Payment updatedPayment = updatePaymentWithSwitchResponse(savedPayment, switchResponse);
+      if (switchResponse.isRecon()) {
+        scheduleReconciliationJob(updatedPayment, switchResponse.getSwitchReference());
+      }
+      return paymentsMapper.map(updatedPayment);
+    } catch (PaymentsException paymentsException) {
+      log.error("PaymentsException in PaymentsServiceImpl.execute: ", paymentsException);
+      throw paymentsException;
+    } catch (Exception ex) {
+      log.error("Exception in PaymentsServiceImpl.execute: ", ex);
+      throw new PaymentsException(
+          HttpStatus.INTERNAL_SERVER_ERROR,
+          PaymentsUtil.prepareErrorDetails("01", "Transaction Failed"));
     }
+  }
 
-    /**
-     * * * {@inheritDoc}
-     */
-    @Override
-    public PaymentResponse retrieve(String paymentReference) {
-        log.info("PaymentsServiceImpl.retrieve called with paymentReference: {}", paymentReference);
-        try{
-            Payment payment = paymentsDao.getPayment(paymentReference);
-            if(Objects.nonNull(payment)){
-                return  paymentsMapper.map(payment);
-            }
-        }
-        catch (Exception ex) {
-            log.error("Exception in PaymentsServiceImpl.retrieve: ", ex);
-        }
-        return null;
+  /** * * {@inheritDoc} */
+  @Override
+  public PaymentResponse retrieve(String paymentReference) {
+    log.debug("PaymentsServiceImpl.retrieve called with paymentReference: {}", paymentReference);
+    try {
+      Payment payment = paymentsDao.getPayment(paymentReference);
+      if (Objects.isNull(payment)) {
+        throw new PaymentsException(
+            HttpStatus.NOT_FOUND,
+            PaymentsUtil.prepareErrorDetails("03", "Payment Details not found"));
+      }
+      return paymentsMapper.map(payment);
+    } catch (PaymentsException ex) {
+      log.error("PaymentsException in PaymentsServiceImpl.retrieve: ", ex);
+      throw ex;
+    } catch (Exception ex) {
+      log.error("Exception in PaymentsServiceImpl.retrieve: ", ex);
+      throw new PaymentsException(
+          HttpStatus.INTERNAL_SERVER_ERROR,
+          PaymentsUtil.prepareErrorDetails("02", "Failed to retrieve payment"));
     }
+  }
 
-    /**
-     * * Prepare Payment entity from PaymentRequest
-     * @param paymentRequest
-     * @return
-     */
+  /**
+   * * Prepare Payment entity from PaymentRequest
+   *
+   * @param paymentRequest
+   * @return
+   */
+  private Payment preparePayment(PaymentRequest paymentRequest) {
+    Payment payment = paymentsMapper.map(paymentRequest);
+    payment.setStatus(PaymentStatus.RECEIVED.getStatus());
+    payment.setPaymentReference(paymentRequest.getPaymentReference());
+    payment.setCreatedDt(Timestamp.from(Instant.now()));
+    return payment;
+  }
 
-    private Payment preparePayment(PaymentRequest paymentRequest) {
-        Payment payment = paymentsMapper.map(paymentRequest);
-        payment.setPaymentReference(PaymentsUtil.generatePaymentReference());
-        payment.setStatus(PaymentStatus.RECEIVED.getStatus());
-        payment.setCreatedDt(Timestamp.from(Instant.now()));
-        return payment;
+  /**
+   * * Execute payment via Payments Switch
+   *
+   * @param paymentRequest
+   * @return
+   */
+  private PaymentsSwitchResponse executeSwitch(PaymentRequest paymentRequest) {
+    PaymentsSwitchRequest switchRequest = paymentsSwitchMapper.map(paymentRequest);
+    return paymentsSwitchAdapter.executePayment(switchRequest);
+  }
+
+  /**
+   * * Update Payment entity based on Payments Switch response
+   *
+   * @param payment
+   * @param response
+   * @return
+   */
+  private Payment updatePaymentWithSwitchResponse(
+      Payment payment, PaymentsSwitchResponse response) {
+    String status =
+        response.getStatus().equals(SUCCESS)
+            ? PaymentStatus.COMPLETED.getStatus()
+            : (!response.isRecon()
+                ? PaymentStatus.FAILED.getStatus()
+                : PaymentStatus.PENDING.getStatus());
+
+    payment.setStatus(status);
+    payment.setUpdatedDt(Timestamp.from(Instant.now()));
+    payment.setSwitchReference(response.getSwitchReference());
+
+    return paymentsDao.updatePayment(payment);
+  }
+
+  /**
+   * Schedule reconciliation job if required
+   *
+   * @param payment
+   * @param switchReference
+   */
+  private void scheduleReconciliationJob(Payment payment, String switchReference) {
+    try {
+      String jobId = paymentsReconJob.enqueueJob(payment.getPaymentId(), switchReference);
+      payment.setReconjobid(jobId);
+    } catch (Exception e) {
+      log.error(
+          "Failed to enqueue reconciliation job for paymentId: {}", payment.getPaymentId(), e);
     }
-
-    /**
-     * * Execute payment via Payments Switch
-     * @param paymentRequest
-     * @return
-     */
-    private PaymentsSwitchResponse executeSwitch(PaymentRequest paymentRequest) {
-        PaymentsSwitchRequest switchRequest = paymentsSwitchMapper.map(paymentRequest);
-        return paymentsSwitchAdapter.executePayment(switchRequest);
-    }
-
-
-    /**
-     * * Update Payment entity based on Payments Switch response
-     * @param payment
-     * @param response
-     * @return
-     */
-
-    private Payment updatePaymentWithSwitchResponse(Payment payment, PaymentsSwitchResponse response) {
-        String status = response.getStatus().equals(SUCCESS)
-                ? PaymentStatus.COMPLETED.getStatus()
-                : (!response.isRecon() ? PaymentStatus.FAILED.getStatus() : PaymentStatus.PENDING.getStatus());
-
-        payment.setStatus(status);
-        payment.setUpdatedDt(Timestamp.from(Instant.now()));
-        payment.setSwitchReference(response.getSwitchReference());
-
-        return paymentsDao.updatePayment(payment);
-    }
-
-
-    /**
-     *  Schedule reconciliation job if required
-     * @param payment
-     * @param switchReference
-     */
-    private void scheduleReconciliationJob(Payment payment, String switchReference) {
-        try {
-            String jobId = paymentsReconJob.enqueueJob(payment.getPaymentId(), switchReference);
-            payment.setReconjobid(jobId);
-        } catch (Exception e) {
-            log.error("Failed to enqueue reconciliation job for paymentId: {}", payment.getPaymentId(), e);
-        }
-    }
-
+  }
 }

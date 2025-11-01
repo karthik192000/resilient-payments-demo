@@ -1,0 +1,26 @@
+<configuration>
+    <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%-4r [%t] %5p %c{1} - %m %n</pattern>
+        </encoder>
+    </appender>
+    <appender name="APP_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%-4r [correlation-Id=%X{correlation-Id}] [%t] %5p %c{1} - %m%n</pattern>
+        </encoder>
+    </appender>
+    <root level="INFO">
+        <appender-ref ref="stdout" />
+    </root>
+    <logger name="com.resilient.payments.demo" level="DEBUG" additivity="false">
+        <appender-ref ref="APP_CONSOLE" />
+    </logger>
+
+    <logger name="com.resilient.payments.demo.config" level="INFO" additivity="false">
+        <appender-ref ref="stdout" />
+    </logger>
+
+    <logger name="com.resilient.payments.demo.ResilientPaymentsApplication" level="INFO" additivity="false">
+        <appender-ref ref="stdout" />
+    </logger>
+</configuration>

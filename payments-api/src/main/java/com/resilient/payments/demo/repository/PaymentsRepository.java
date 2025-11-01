@@ -4,13 +4,9 @@ import com.resilient.payments.demo.entity.Payment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-
-/**
- * * * Payments Repository Interface
- */
+/** * * Payments Repository Interface */
 @Repository
-public interface PaymentsRepository extends JpaRepository<Payment,Long> {
+public interface PaymentsRepository extends JpaRepository<Payment, Long> {
 
-
-    Payment findByPaymentReference(String paymentReference);
+  Payment findByPaymentReference(String paymentReference);
 }
