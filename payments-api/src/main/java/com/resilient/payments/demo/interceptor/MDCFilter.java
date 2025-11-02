@@ -24,9 +24,11 @@ public class MDCFilter extends OncePerRequestFilter {
         correlationId = CORRELATION_ID_PREFIX + System.currentTimeMillis();
       }
       MDC.put(CORRELATION_ID_LOG_KEY, correlationId);
-      filterChain.doFilter(request, response);
       response.setHeader(CORRELATION_ID_HEADER, correlationId);
-    } finally {
+      filterChain.doFilter(request, response);
+      System.out.println("MDCFilter - Correlation ID set to: " + correlationId);
+    }
+    finally {
       MDC.clear();
     }
   }

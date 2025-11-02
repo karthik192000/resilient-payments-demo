@@ -5,6 +5,7 @@ import static com.resilient.payments.demo.constants.PaymentConstants.SUCCESS;
 import com.resilient.payments.demo.adapter.PaymentsSwitchAdapter;
 import com.resilient.payments.demo.dao.PaymentsDao;
 import com.resilient.payments.demo.entity.Payment;
+import com.resilient.payments.demo.enums.ErrorMessages;
 import com.resilient.payments.demo.enums.PaymentStatus;
 import com.resilient.payments.demo.exceptions.PaymentsException;
 import com.resilient.payments.demo.job.PaymentsReconJob;
@@ -59,7 +60,7 @@ public class PaymentsServiceImpl implements PaymentsService {
       log.error("Exception in PaymentsServiceImpl.execute: ", ex);
       throw new PaymentsException(
           HttpStatus.INTERNAL_SERVER_ERROR,
-          PaymentsUtil.prepareErrorDetails("01", "Transaction Failed"));
+          PaymentsUtil.prepareErrorDetails(ErrorMessages.TRANSACTION_FAILED));
     }
   }
 
@@ -72,7 +73,7 @@ public class PaymentsServiceImpl implements PaymentsService {
       if (Objects.isNull(payment)) {
         throw new PaymentsException(
             HttpStatus.NOT_FOUND,
-            PaymentsUtil.prepareErrorDetails("03", "Payment Details not found"));
+            PaymentsUtil.prepareErrorDetails(ErrorMessages.PAYMENT_DETAILS_NOT_FOUND));
       }
       return paymentsMapper.map(payment);
     } catch (PaymentsException ex) {
@@ -82,7 +83,7 @@ public class PaymentsServiceImpl implements PaymentsService {
       log.error("Exception in PaymentsServiceImpl.retrieve: ", ex);
       throw new PaymentsException(
           HttpStatus.INTERNAL_SERVER_ERROR,
-          PaymentsUtil.prepareErrorDetails("02", "Failed to retrieve payment"));
+          PaymentsUtil.prepareErrorDetails(ErrorMessages.FAILED_TO_RETRIEVE_PAYMENT_DETAILS));
     }
   }
 

@@ -11,6 +11,8 @@ public class ErrorDetails {
 
   private final String errorMessage;
 
+  private final String timestamp = java.time.Instant.now().toString();
+
   public ErrorDetails(String errorCode, String errorMessage) {
     this.errorCode = errorCode;
     this.errorMessage = errorMessage;
