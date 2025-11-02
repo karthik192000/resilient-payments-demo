@@ -26,15 +26,13 @@ public class MDCFilter extends OncePerRequestFilter {
       MDC.put(CORRELATION_ID_LOG_KEY, correlationId);
       response.setHeader(CORRELATION_ID_HEADER, correlationId);
       filterChain.doFilter(request, response);
-    }
-    finally {
+    } finally {
       MDC.clear();
     }
   }
 
-
-  protected boolean shouldNotFilter(HttpServletRequest request){
+  protected boolean shouldNotFilter(HttpServletRequest request) {
     String path = request.getRequestURI();
-    return SKIP_FILTER_URIS.stream().anyMatch(path :: startsWith);
+    return SKIP_FILTER_URIS.stream().anyMatch(path::startsWith);
   }
 }

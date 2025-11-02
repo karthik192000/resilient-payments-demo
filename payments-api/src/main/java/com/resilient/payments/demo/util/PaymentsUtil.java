@@ -8,7 +8,8 @@ public class PaymentsUtil {
     return new ErrorDetails(errorCode, errorMessage);
   }
 
-  public static ErrorDetails prepareErrorDetails(com.resilient.payments.demo.enums.ErrorMessages errorMessage) {
+  public static ErrorDetails prepareErrorDetails(
+      com.resilient.payments.demo.enums.ErrorMessages errorMessage) {
     return new ErrorDetails(errorMessage.getErrorCode(), errorMessage.getErrorMessage());
   }
 }

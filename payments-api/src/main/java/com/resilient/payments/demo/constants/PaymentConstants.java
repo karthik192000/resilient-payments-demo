@@ -27,6 +27,5 @@ public class PaymentConstants {
           HttpServerErrorException.ServiceUnavailable.class,
           HttpClientErrorException.TooManyRequests.class);
 
-
-  public static final List<String> SKIP_FILTER_URIS= List.of("/swagger-ui","/v3/api-docs");
+  public static final List<String> SKIP_FILTER_URIS = List.of("/swagger-ui", "/v3/api-docs");
 }
