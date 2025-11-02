@@ -21,8 +21,8 @@ public class PaymentsControllerAdvice {
   @ExceptionHandler(exception = {Exception.class})
   public ResponseEntity<?> handleException(Exception exception) {
     log.error("PaymentsControllerAdvice.handlePaymentException called with exception: ", exception);
-    PaymentsException paymentsException = (PaymentsException) exception;
     return new ResponseEntity<>(
-        paymentsException.getErrorDetails(), paymentsException.getHttpStatus());
+        "An unexpected error occurred. Please try again later.",
+        org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR);
   }
 }

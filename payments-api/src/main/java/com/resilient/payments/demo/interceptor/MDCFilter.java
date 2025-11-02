@@ -30,4 +30,10 @@ public class MDCFilter extends OncePerRequestFilter {
       MDC.clear();
     }
   }
+
+
+  protected boolean shouldNotFilter(HttpServletRequest request){
+    String path = request.getRequestURI();
+    return SKIP_FILTER_URIS.stream().anyMatch(path :: startsWith);
+  }
 }

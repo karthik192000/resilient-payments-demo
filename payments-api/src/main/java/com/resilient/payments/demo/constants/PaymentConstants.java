@@ -1,5 +1,6 @@
 package com.resilient.payments.demo.constants;
 
+import java.util.List;
 import java.util.Set;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -25,4 +26,7 @@ public class PaymentConstants {
           HttpServerErrorException.InternalServerError.class,
           HttpServerErrorException.ServiceUnavailable.class,
           HttpClientErrorException.TooManyRequests.class);
+
+
+  public static final List<String> SKIP_FILTER_URIS= List.of("/swagger-ui","/v3/api-docs");
 }
