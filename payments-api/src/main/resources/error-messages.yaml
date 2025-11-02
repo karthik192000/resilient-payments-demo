@@ -1,5 +1,0 @@
-errors:
-  "01": "Transaction Failed"
-  "02": "Failed to retrieve payment details"
-  "03": "Payment Details Not Found"
-  "04": "An unexpected error occurred, please contact support."
