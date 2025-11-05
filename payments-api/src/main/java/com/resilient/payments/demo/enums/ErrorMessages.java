@@ -7,7 +7,8 @@ public enum ErrorMessages {
   TRANSACTION_FAILED("ERROR_001", "Transaction Failed"),
   FAILED_TO_RETRIEVE_PAYMENT_DETAILS("ERROR_002", "Failed to retrieve payment details"),
   PAYMENT_DETAILS_NOT_FOUND("ERROR_003", "Payment Details not found"),
-  UNEXPECTED_ERROR_OCCURRED("ERROR_004", "An unexpected error occurred. Please try again later.");
+  UNEXPECTED_ERROR_OCCURRED("ERROR_004", "An unexpected error occurred. Please try again later."),
+  PARTNER_NOT_ELIGIBLE_FOR_TRANSACTION("ERROR_005", "Partner not authorized");
 
   private final String errorCode;
 

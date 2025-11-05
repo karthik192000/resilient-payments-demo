@@ -3,6 +3,7 @@ package com.resilient.payments.demo.entity;
 import jakarta.persistence.*;
 import java.sql.Timestamp;
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Value;
 
 /** Payment Entity Class */
 @Entity
@@ -11,8 +12,13 @@ import lombok.Data;
 public class Payment {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "payment_seq_gen")
   @Column(name = "paymentid")
+  @SequenceGenerator(
+          name = "payment_seq_gen",
+          sequenceName = "payments.payment_id_sequence",
+          allocationSize = 1
+  )
   private Long paymentId;
 
   @Column(name = "paymentreference")
@@ -50,4 +56,10 @@ public class Payment {
 
   @Column(name = "reconjobid")
   private String reconjobid;
+
+  @Column(name = "partnerid")
+  private String partnerId;
+
+  @Column(name = "currency")
+  private String currency;
 }

@@ -19,12 +19,8 @@ public class MDCFilter extends OncePerRequestFilter {
       HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
       throws ServletException, IOException {
     try {
-      String correlationId = request.getHeader(CORRELATION_ID_HEADER);
-      if (StringUtils.isBlank(correlationId)) {
-        correlationId = CORRELATION_ID_PREFIX + System.currentTimeMillis();
-      }
-      MDC.put(CORRELATION_ID_LOG_KEY, correlationId);
-      response.setHeader(CORRELATION_ID_HEADER, correlationId);
+      populateCorrelationId(request, response);
+      populatePartnerId(request, response);
       filterChain.doFilter(request, response);
     } finally {
       MDC.clear();
@@ -34,5 +30,22 @@ public class MDCFilter extends OncePerRequestFilter {
   protected boolean shouldNotFilter(HttpServletRequest request) {
     String path = request.getRequestURI();
     return SKIP_FILTER_URIS.stream().anyMatch(path::startsWith);
+  }
+
+  protected void populateCorrelationId(HttpServletRequest request, HttpServletResponse response) {
+    String correlationId = request.getHeader(CORRELATION_ID_HEADER);
+    if (StringUtils.isBlank(correlationId)) {
+      correlationId = CORRELATION_ID_PREFIX + System.currentTimeMillis();
+    }
+    MDC.put(CORRELATION_ID_LOG_KEY, correlationId);
+    response.setHeader(CORRELATION_ID_HEADER, correlationId);
+  }
+
+  protected void populatePartnerId(HttpServletRequest request, HttpServletResponse response) {
+    String partnerId = request.getHeader(PARTNER_ID_HEADER);
+    if (StringUtils.isNotBlank(partnerId)) {
+      MDC.put(PARTNER_ID_LOG_KEY, partnerId);
+    }
+    response.setHeader(PARTNER_ID_HEADER, partnerId);
   }
 }

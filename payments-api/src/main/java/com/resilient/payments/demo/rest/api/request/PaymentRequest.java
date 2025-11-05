@@ -16,6 +16,8 @@ public class PaymentRequest {
 
   private Integer receiverAccountNumber;
 
+  private String currency;
+
   private Double amount;
 
   private String paymentReference;

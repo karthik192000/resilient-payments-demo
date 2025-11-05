@@ -27,5 +27,9 @@ public class PaymentConstants {
           HttpServerErrorException.ServiceUnavailable.class,
           HttpClientErrorException.TooManyRequests.class);
 
+  public static final String PARTNER_ID_HEADER = "x-partner-id";
+
+  public static final String PARTNER_ID_LOG_KEY = "partner-Id";
+
   public static final List<String> SKIP_FILTER_URIS = List.of("/swagger-ui", "/v3/api-docs");
 }

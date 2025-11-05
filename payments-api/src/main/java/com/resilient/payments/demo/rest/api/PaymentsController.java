@@ -15,13 +15,16 @@ public class PaymentsController {
   @PostMapping(path = "/execute")
   public ResponseEntity<PaymentResponse> executePayment(
       @RequestBody PaymentRequest request,
-      @RequestHeader(value = "x-correlation-Id", required = false) String correlationId) {
+      @RequestHeader(value = "x-correlation-Id", required = false) String correlationId,
+      @RequestHeader(value = "x-partner-id", required = true) String partnerId) {
     PaymentResponse response = paymentsService.execute(request);
     return ResponseEntity.ok(response);
   }
 
-  @GetMapping(path = "/retrieve")
-  public ResponseEntity<PaymentResponse> retrievePayment(String paymentReference) {
+  @GetMapping(path = "/retrieve/{paymentReference}")
+  public ResponseEntity<PaymentResponse> retrievePayment(@PathVariable(name = "paymentReference") String paymentReference,
+                                                         @RequestHeader(value = "x-correlation-Id", required = false) String correlationId,
+                                                         @RequestHeader(value = "x-partner-id", required = true) String partnerId) {
     PaymentResponse response = paymentsService.retrieve(paymentReference);
     return ResponseEntity.ok(response);
   }
