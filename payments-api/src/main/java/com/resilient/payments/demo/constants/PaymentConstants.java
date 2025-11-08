@@ -1,21 +1,37 @@
 package com.resilient.payments.demo.constants;
 
+import java.util.List;
+import java.util.Set;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.ResourceAccessException;
 
-import java.util.Set;
-
-
-/**
- * * * Payment Constants Class
- */
+/** * * Payment Constants Class */
 public class PaymentConstants {
 
+  public static final String PAYMENT_REFERENCE_PREFIX = "pay_";
 
-    public static final String PAYMENT_REFERENCE_PREFIX = "pay_";
+  public static final String SWITCH_REFERENCE = "switch-reference";
 
-    public static final String SWITCH_REFERENCE = "switch-reference";
+  public static final String SUCCESS = "SUCCESS";
 
-    public static final String SUCCESS = "SUCCESS";
-    public static final Set<Class<? extends Exception>> RETRYABLE_EXCEPTIONS = Set.of(HttpServerErrorException.InternalServerError.class, HttpServerErrorException.ServiceUnavailable.class, HttpClientErrorException.TooManyRequests.class);
+  public static final String CORRELATION_ID_PREFIX = "corr-id-";
+
+  public static final String CORRELATION_ID_HEADER = "x-correlation-Id";
+
+  public static final String CORRELATION_ID_LOG_KEY = "correlation-Id";
+  public static final Set<Class<? extends Exception>> RETRYABLE_EXCEPTIONS =
+      Set.of(
+          ResourceAccessException.class,
+          HttpServerErrorException.InternalServerError.class,
+          HttpServerErrorException.ServiceUnavailable.class,
+          HttpClientErrorException.TooManyRequests.class);
+
+  public static final String PARTNER_ID_HEADER = "x-partner-id";
+
+  public static final String PARTNER_ID_LOG_KEY = "partner-Id";
+
+  public static final List<String> SKIP_FILTER_URIS = List.of("/swagger-ui", "/v3/api-docs");
+
+  public static final String TLS = "TLS";
 }

@@ -1,26 +1,24 @@
 package com.resilient.payments.demo.rest.api.request;
 
-
 import lombok.Getter;
 import lombok.Setter;
 
-
-/**
- * * Payment Request DTO
- */
+/** * Payment Request DTO */
 @Getter
 @Setter
 public class PaymentRequest {
 
-    private String senderName;
+  private String senderName;
 
-    private Integer senderAccountNumber;
+  private Integer senderAccountNumber;
 
-    private String receiverName;
+  private String receiverName;
 
-    private Integer receiverAccountNumber;
+  private Integer receiverAccountNumber;
 
-    private Double amount;
+  private String currency;
 
+  private Double amount;
 
+  private String paymentReference;
 }

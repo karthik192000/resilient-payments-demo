@@ -1,4 +1,9 @@
 spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: <your JWK set URI here>
   jpa:
     properties:
       hibernate:
@@ -29,3 +34,36 @@ payment:
     job:
       delay:
         seconds: 10
+
+
+keystore:
+  location: <your keystore path here>
+  password: <your keystore password here>
+
+truststore:
+  location: <your truststore path here>
+  password: <your truststore password here>
+
+store:
+  type: <your store type here, e.g., PKCS12 or JKS>
+
+server:
+  port: 8080
+  ssl:
+    key-store: classpath:${keystore.location}
+    key-store-password: ${keystore.password}
+    key-store-type: ${store.type}
+    trust-store: classpath:${truststore.location}
+    trust-store-password: ${truststore.password}
+    trust-store-type: ${store.type}
+    enabled: true
+    client-auth: need
+logging:
+    level:
+      com.resilient.payments.demo: DEBUG
+      org.springframework.security: DEBUG
+
+
+auth:
+  server:
+    base-url: https://localhost:9090
