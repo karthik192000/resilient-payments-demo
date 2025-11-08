@@ -32,4 +32,6 @@ public class PaymentConstants {
   public static final String PARTNER_ID_LOG_KEY = "partner-Id";
 
   public static final List<String> SKIP_FILTER_URIS = List.of("/swagger-ui", "/v3/api-docs");
+
+  public static final String TLS = "TLS";
 }

@@ -1,6 +1,5 @@
 package com.resilient.payments.demo.entity;
 
-
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -9,23 +8,21 @@ import lombok.Data;
 @Data
 public class PartnerConfig {
 
-    @Column(name = "partnerid")
-    @Id
-    @SequenceGenerator(
-            name = "partner_id_seq_gen",
-            sequenceName = "payments.partner_id_sequence",
-            allocationSize = 1
-    )
-    private Long partnerId;
+  @Column(name = "partnerid")
+  @Id
+  @SequenceGenerator(
+      name = "partner_id_seq_gen",
+      sequenceName = "payments.partner_id_sequence",
+      allocationSize = 1)
+  private Long partnerId;
 
+  private String partnerName;
 
-    private String partnerName;
+  private String partnerRef;
 
-    private String partnerRef;
+  private String jwtSecret;
 
-    private String jwtSecret;
+  private String apiKey;
 
-    private String apiKey;
-
-    private String status;
+  private String status;
 }

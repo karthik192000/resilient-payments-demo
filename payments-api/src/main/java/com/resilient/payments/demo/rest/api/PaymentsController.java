@@ -22,9 +22,10 @@ public class PaymentsController {
   }
 
   @GetMapping(path = "/retrieve/{paymentReference}")
-  public ResponseEntity<PaymentResponse> retrievePayment(@PathVariable(name = "paymentReference") String paymentReference,
-                                                         @RequestHeader(value = "x-correlation-Id", required = false) String correlationId,
-                                                         @RequestHeader(value = "x-partner-id", required = true) String partnerId) {
+  public ResponseEntity<PaymentResponse> retrievePayment(
+      @PathVariable(name = "paymentReference") String paymentReference,
+      @RequestHeader(value = "x-correlation-Id", required = false) String correlationId,
+      @RequestHeader(value = "x-partner-id", required = true) String partnerId) {
     PaymentResponse response = paymentsService.retrieve(paymentReference);
     return ResponseEntity.ok(response);
   }

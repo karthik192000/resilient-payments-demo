@@ -3,7 +3,6 @@ package com.resilient.payments.demo.entity;
 import jakarta.persistence.*;
 import java.sql.Timestamp;
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Value;
 
 /** Payment Entity Class */
 @Entity
@@ -15,10 +14,9 @@ public class Payment {
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "payment_seq_gen")
   @Column(name = "paymentid")
   @SequenceGenerator(
-          name = "payment_seq_gen",
-          sequenceName = "payments.payment_id_sequence",
-          allocationSize = 1
-  )
+      name = "payment_seq_gen",
+      sequenceName = "payments.payment_id_sequence",
+      allocationSize = 1)
   private Long paymentId;
 
   @Column(name = "paymentreference")
