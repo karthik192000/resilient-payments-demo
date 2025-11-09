@@ -1,12 +1,12 @@
-package com.demo.spring.auth.server;
+package com.resilient.payments.demo;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class DemoSpringAuthServerApplication {
+public class AuthServerApplication {
 
   public static void main(String[] args) {
-    SpringApplication.run(DemoSpringAuthServerApplication.class, args);
+    SpringApplication.run(AuthServerApplication.class, args);
   }
 }

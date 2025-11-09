@@ -1,4 +1,4 @@
-package com.demo.spring.auth.server.config;
+package com.resilient.payments.demo.config;
 
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
