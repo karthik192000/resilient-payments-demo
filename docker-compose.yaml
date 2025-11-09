@@ -1,0 +1,52 @@
+version: '3.9'
+services:
+  nginx-proxy:
+    image: nginx:latest
+    container_name: nginx-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d/app.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+    networks:
+      - payments-network
+
+  payments-api:
+    image: payments-api
+    container_name: payments-api
+    environment:
+      - PAYMENTS_DATABASE_URL=${PAYMENTS_DATABASE_URL}
+      - PAYMENTS_DATABASE_USERNAME=${PAYMENTS_DATABASE_USERNAME}
+      - PAYMENTS_DATABASE_PASSWORD=${PAYMENTS_DATABASE_PASSWORD}
+      - API_PAYMENTS_SWITCH=${API_PAYMENTS_SWITCH}
+      - API_PAYMENTS_SWITCH_FINAL_STATUS=${API_PAYMENTS_SWITCH_FINAL_STATUS}
+      - PAYMENTS_KEYSTORE_LOCATION=${PAYMENTS_KEYSTORE_LOCATION}
+      - PAYMENTS_KEYSTORE_PASSWORD=${PAYMENTS_KEYSTORE_PASSWORD}
+      - PAYMENTS_TRUSTSTORE_LOCATION=${PAYMENTS_TRUSTSTORE_LOCATION}
+      - PAYMENTS_TRUSTSTORE_PASSWORD=${PAYMENTS_TRUSTSTORE_PASSWORD}
+      - STORE_TYPE=${STORE_TYPE}
+      - AUTH_SERVER_URL=${AUTH_SERVER_URL}
+    networks:
+        - payments-network
+  auth-server:
+    image: authserver
+    container_name: auth-server
+    environment:
+      - AUTH_SERVER_KEYSTORE=${AUTH_SERVER_KEYSTORE}
+      - AUTH_SERVER_KEYSTORE_PASSWORD=${AUTH_SERVER_KEYSTORE_PASSWORD}
+      - AUTH_SERVER_TRUSTSTORE=${AUTH_SERVER_TRUSTSTORE}
+      - AUTH_SERVER_TRUSTSTORE_PASSWORD=${AUTH_SERVER_TRUSTSTORE_PASSWORD}
+      - STORE_TYPE=${STORE_TYPE}
+    networks:
+      - payments-network
+  payments-switch:
+    image: payments-switch
+    container_name: payments-switch
+    networks:
+      - payments-network
+
+
+networks:
+    payments-network:
+        driver: bridge

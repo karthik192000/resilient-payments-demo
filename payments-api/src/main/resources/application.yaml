@@ -1,23 +1,18 @@
 spring:
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          jwk-set-uri: <your JWK set URI here>
   jpa:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
-    username: postgres
-    password: admin@123
+    url: ${PAYMENTS_DATABASE_URL} #jdbc:postgresql://localhost:5432/postgres
+    username: ${PAYMENTS_DATABASE_USERNAME}
+    password: ${PAYMENTS_DATABASE_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
 api:
   payments:
-    switch: http://localhost:8089/api/v1/payments
-    final-status: http://localhost:8089/api/v1/payments/final-status/{switchReference}
+    switch: ${API_PAYMENTS_SWITCH}  #http://localhost:8089/api/v1/payments
+    final-status: ${API_PAYMENTS_SWITCH_FINAL_STATUS} #http://localhost:8089/api/v1/payments/final-status/{switchReference}
 
 
 resilience4j:
@@ -37,15 +32,15 @@ payment:
 
 
 keystore:
-  location: <your keystore path here>
-  password: <your keystore password here>
+  location: ${PAYMENTS_KEYSTORE_LOCATION}
+  password: ${PAYMENTS_KEYSTORE_PASSWORD}
 
 truststore:
-  location: <your truststore path here>
-  password: <your truststore password here>
+  location: ${PAYMENTS_TRUSTSTORE_LOCATION}
+  password: ${PAYMENTS_TRUSTSTORE_PASSWORD}
 
 store:
-  type: <your store type here, e.g., PKCS12 or JKS>
+  type: ${STORE_TYPE}
 
 server:
   port: 8080
@@ -58,12 +53,9 @@ server:
     trust-store-type: ${store.type}
     enabled: true
     client-auth: need
-logging:
-    level:
-      com.resilient.payments.demo: DEBUG
-      org.springframework.security: DEBUG
 
 
 auth:
   server:
-    base-url: https://localhost:9090
+    base-url: ${AUTH_SERVER_URL}
+    jwks-set-url: ${AUTH_SERVER_URL}/v1/auth/oauth2/jwks

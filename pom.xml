@@ -17,6 +17,7 @@
     <modules>
         <module>payments-api</module>
         <module>payments-switch-mock</module>
+        <module>auth-server</module>
     </modules>
 
 
