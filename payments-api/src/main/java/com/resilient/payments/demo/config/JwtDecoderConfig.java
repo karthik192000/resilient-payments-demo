@@ -16,12 +16,12 @@ import org.springframework.web.client.RestTemplate;
 @Configuration
 public class JwtDecoderConfig {
 
-  @Value("${auth.server.base-url}")
-  String authServerBaseUrl;
+  @Value("${auth.server.jwks-set-url}")
+  String authServerJwksSetUrl;
 
   @Bean
   public JwtDecoder jwtDecoder(@Qualifier("httpsRestTemplate") RestTemplate restTemplate) {
-    return NimbusJwtDecoder.withIssuerLocation(authServerBaseUrl)
+    return NimbusJwtDecoder.withJwkSetUri(authServerJwksSetUrl)
         .restOperations(
             restTemplate) // customize RestOperations to trust self-signed certs if necessary
         .build();

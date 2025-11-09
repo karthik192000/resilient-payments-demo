@@ -7,7 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@RestController(value = "/v1/payments")
+@RestController
+@RequestMapping("/v1/payments")
 public class PaymentsController {
 
   @Autowired PaymentsService paymentsService;
