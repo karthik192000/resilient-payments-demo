@@ -58,4 +58,14 @@ server:
 auth:
   server:
     base-url: ${AUTH_SERVER_URL}
-    jwks-set-url: ${AUTH_SERVER_URL}/v1/auth/oauth2/jwks
+    jwks-set-url: ${AUTH_SERVER_URL}/oauth2/jwks
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus,health
+  endpoint:
+    health:
+      show-details: always

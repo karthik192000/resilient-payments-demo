@@ -1,13 +1,20 @@
 server:
-  servlet:
-    context-path: /v1/auth
   port: 9090
   ssl:
     enabled: true
     key-store: classpath:${AUTH_SERVER_KEYSTORE}
-    key-store-type: PKCS12
+    key-store-type: ${STORE_TYPE}
     key-store-password: ${AUTH_SERVER_KEYSTORE_PASSWORD}
     trust-store: classpath:${AUTH_SERVER_TRUSTSTORE}
     trust-store-password: ${AUTH_SERVER_TRUSTSTORE_PASSWORD}
     trust-store-type: ${STORE_TYPE}
     client-auth: need
+
+management:
+    endpoints:
+        web:
+          exposure:
+            include: prometheus,health
+    endpoint:
+        health:
+        show-details: always

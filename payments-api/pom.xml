@@ -97,7 +97,10 @@
             <artifactId>httpcore5</artifactId>
             <version>5.3.6</version>
         </dependency>
-
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-registry-prometheus</artifactId>
+        </dependency>
     </dependencies>
 
 

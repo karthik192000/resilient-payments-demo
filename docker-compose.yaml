@@ -2,7 +2,7 @@ version: '3.9'
 services:
   nginx-proxy:
     image: nginx:latest
-    container_name: nginx-proxy
+    container_name: nginx-server
     ports:
       - "80:80"
       - "443:443"
@@ -15,6 +15,8 @@ services:
   payments-api:
     image: payments-api
     container_name: payments-api
+    ports:
+      - "8080:8080"
     environment:
       - PAYMENTS_DATABASE_URL=${PAYMENTS_DATABASE_URL}
       - PAYMENTS_DATABASE_USERNAME=${PAYMENTS_DATABASE_USERNAME}
@@ -32,6 +34,8 @@ services:
   auth-server:
     image: authserver
     container_name: auth-server
+    ports:
+      - "9090:9090"
     environment:
       - AUTH_SERVER_KEYSTORE=${AUTH_SERVER_KEYSTORE}
       - AUTH_SERVER_KEYSTORE_PASSWORD=${AUTH_SERVER_KEYSTORE_PASSWORD}

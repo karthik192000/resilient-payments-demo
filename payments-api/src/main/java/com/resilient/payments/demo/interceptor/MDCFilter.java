@@ -25,6 +25,8 @@ public class MDCFilter extends OncePerRequestFilter {
       populateCorrelationId(request, response);
       populatePartnerId(request, response);
       filterChain.doFilter(request, response);
+      String subjectDN = request.getHeader(" X-Client-Subject-DN");
+      log.debug("MDCFilter.doFilterInternal completed for subjectDN: {}", subjectDN);
       log.debug("MDCFilter.doFilterInternal completed for URI: {}", request.getRequestURI());
     } finally {
       MDC.clear();
