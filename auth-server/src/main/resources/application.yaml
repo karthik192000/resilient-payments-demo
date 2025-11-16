@@ -18,3 +18,17 @@ management:
     endpoint:
         health:
         show-details: always
+
+
+spring:
+  datasource:
+    url: ${AUTH_SERVER_DATASOURCE_URL}
+    username: ${AUTH_SERVER_DATASOURCE_USERNAME}
+    password: ${AUTH_SERVER_DATASOURCE_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    properties:
+      hibernate:
+        default_schema: auth
+      dialect: org.hibernate.dialect.PostgreSQLDialect
+

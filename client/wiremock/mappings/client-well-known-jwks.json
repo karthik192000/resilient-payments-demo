@@ -1,0 +1,18 @@
+{
+  "mappings": [
+
+    {
+        "request": {
+            "method": "GET",
+            "url": "/.well-known/jwks.json"
+        },
+        "response": {
+            "status": 200,
+            "bodyFileName": "client_jwks.json",
+            "headers": {
+            "Content-Type": "application/json"
+            }
+        }
+    }
+  ]
+}

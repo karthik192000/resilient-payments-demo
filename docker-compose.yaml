@@ -1,5 +1,13 @@
 version: '3.9'
 services:
+
+  client-well-known-jwks:
+    image: wiremock/wiremock:3.9.1
+    container_name: client-well-known-jwks
+    ports:
+      - "8081:8080"
+    volumes:
+        - ./client/wiremock:/home/wiremock:ro
   nginx-proxy:
     image: nginx:latest
     container_name: nginx-server
@@ -16,7 +24,7 @@ services:
     image: payments-api
     container_name: payments-api
     ports:
-      - "8080:8080"
+      - "8080"
     environment:
       - PAYMENTS_DATABASE_URL=${PAYMENTS_DATABASE_URL}
       - PAYMENTS_DATABASE_USERNAME=${PAYMENTS_DATABASE_USERNAME}
@@ -35,13 +43,16 @@ services:
     image: authserver
     container_name: auth-server
     ports:
-      - "9090:9090"
+      - "9090"
     environment:
       - AUTH_SERVER_KEYSTORE=${AUTH_SERVER_KEYSTORE}
       - AUTH_SERVER_KEYSTORE_PASSWORD=${AUTH_SERVER_KEYSTORE_PASSWORD}
       - AUTH_SERVER_TRUSTSTORE=${AUTH_SERVER_TRUSTSTORE}
       - AUTH_SERVER_TRUSTSTORE_PASSWORD=${AUTH_SERVER_TRUSTSTORE_PASSWORD}
       - STORE_TYPE=${STORE_TYPE}
+      - AUTH_SERVER_DATASOURCE_URL=${AUTH_SERVER_DATASOURCE_URL}
+      - AUTH_SERVER_DATASOURCE_USERNAME=${AUTH_SERVER_DATASOURCE_USERNAME}
+      - AUTH_SERVER_DATASOURCE_PASSWORD=${AUTH_SERVER_DATASOURCE_PASSWORD}
     networks:
       - payments-network
   payments-switch:

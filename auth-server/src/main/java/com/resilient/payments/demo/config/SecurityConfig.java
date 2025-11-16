@@ -11,6 +11,7 @@ import java.util.UUID;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.User;
@@ -20,6 +21,7 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.server.authorization.client.InMemoryRegisteredClientRepository;
+import org.springframework.security.oauth2.server.authorization.client.JdbcRegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
@@ -28,6 +30,8 @@ import org.springframework.security.oauth2.server.authorization.settings.TokenSe
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+
+import javax.sql.DataSource;
 
 @Configuration
 public class SecurityConfig {
@@ -51,6 +55,12 @@ public class SecurityConfig {
         .oidc(Customizer.withDefaults());
 
     return httpSecurity.build();
+  }
+
+
+  @Bean
+  public RegisteredClientRepository registeredClientRepository(DataSource dataSource) {
+    return new JdbcRegisteredClientRepository(new JdbcTemplate(dataSource));
   }
 
   @Bean
@@ -79,24 +89,6 @@ public class SecurityConfig {
     } catch (Exception e) {
       throw new IllegalStateException(e);
     }
-  }
-
-  @Bean
-  RegisteredClientRepository registeredClientRepository() {
-    PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
-
-    RegisteredClient client =
-        RegisteredClient.withId(UUID.randomUUID().toString())
-            .clientId("svc-client")
-            .clientSecret(encoder.encode("svc-secret"))
-            .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
-            .scope("read")
-            .scope("write")
-            .tokenSettings(
-                TokenSettings.builder().accessTokenTimeToLive(Duration.ofHours(1)).build())
-            .build();
-
-    return new InMemoryRegisteredClientRepository(client);
   }
 
   @Bean
