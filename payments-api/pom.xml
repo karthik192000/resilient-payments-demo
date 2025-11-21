@@ -68,12 +68,12 @@
         <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
-            <version>1.5.5.Final</version>
+            <version>${mapstruct.version}</version>
         </dependency>
         <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct-processor</artifactId>
-            <version>1.6.3</version>
+            <version>${mapstruct-processor.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

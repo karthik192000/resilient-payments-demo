@@ -1,5 +1,6 @@
 package com.resilient.payments.demo.rest.request;
 
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -7,16 +8,11 @@ import lombok.Setter;
 @Setter
 public class ClientRegistrationRequest {
 
+  private String clientId;
 
-    private String clientId;
+  private String clientName;
 
-    private String clientSecret;
+  private List<String> scopes;
 
-    private String redirectUri;
-
-    private String scope;
-
-
-
-
+  private String jwkSetUrl;
 }
