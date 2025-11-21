@@ -1,0 +1,6 @@
+spring:
+  datasource:
+    url: ${ONBOARDING_DATASOURCE_URL}
+    username: ${ONBOARDING_DATASOURCE_USERNAME}
+    password: ${ONBOARDING_DATASOURCE_PASSWORD}
+    driver-class-name: org.postgresql.Driver
