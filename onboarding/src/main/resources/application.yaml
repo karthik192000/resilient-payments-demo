@@ -4,3 +4,13 @@ spring:
     username: ${ONBOARDING_DATASOURCE_USERNAME}
     password: ${ONBOARDING_DATASOURCE_PASSWORD}
     driver-class-name: org.postgresql.Driver
+
+google:
+  oauth:
+    redirect-uri: ${GOOGLE_OAUTH_REDIRECT_URI}
+    client-id: ${GOOGLE_OAUTH_CLIENT_ID}
+    client-secret: ${GOOGLE_OAUTH_CLIENT_SECRET}
+    user-info:
+        endpoint: ${GOOGLE_OAUTH_USERINFO_ENDPOINT}
+    token:
+      endpoint: ${GOOGLE_OAUTH_TOKEN_ENDPOINT}
