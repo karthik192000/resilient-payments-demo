@@ -1,6 +1,7 @@
 package com.resilient.payments.demo.adapter;
 
 import java.util.Map;
+import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @Component
 @Slf4j
@@ -60,5 +62,18 @@ public class GoogleOauthAdapter {
     HttpHeaders headers = new HttpHeaders();
     headers.add("Content-Type", "application/x-www-form-urlencoded");
     return new HttpEntity<>(params, headers);
+  }
+
+  public String getUserInfoFromGoogle(String accessToken) {
+    Objects.requireNonNull(accessToken, "Access Token cannot be null");
+    UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(googleUserInfoEndpoint);
+    uriBuilder.queryParam("id_token", accessToken);
+    ResponseEntity<Map> responseEntity =
+        restTemplate.getForEntity(uriBuilder.toUriString(), Map.class);
+    if (responseEntity.getStatusCode().is2xxSuccessful()) {
+      return responseEntity.getBody().get("email").toString();
+    }
+
+    return null;
   }
 }

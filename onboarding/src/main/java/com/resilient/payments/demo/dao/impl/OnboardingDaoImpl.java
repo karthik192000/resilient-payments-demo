@@ -15,4 +15,9 @@ public class OnboardingDaoImpl implements OnboardingDao {
   public User getUserByUserName(String userName) {
     return userRepository.findByUserName(userName);
   }
+
+  @Override
+  public User saveUser(User user) {
+    return userRepository.save(user);
+  }
 }
