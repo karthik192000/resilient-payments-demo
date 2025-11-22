@@ -1,9 +1,6 @@
 package com.resilient.payments.demo.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import java.util.List;
+import jakarta.persistence.*;
 import lombok.Data;
 
 @Data
@@ -11,13 +8,21 @@ import lombok.Data;
 @Table(name = "users", schema = "onboarding")
 public class User {
 
-  @Id private Long userId;
+  @Id
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_id_sequence")
+  @Column(name = "user_id")
+  @SequenceGenerator(
+      name = "user_id_sequence",
+      sequenceName = "onboarding.user_id_sequence",
+      allocationSize = 1)
+  private Long userId;
 
+  @Column(name = "user_name")
   private String userName;
 
+  @Column(name = "user_email")
   private String userEmail;
 
+  @Column(name = "password")
   private String password;
-
-  private List<String> roles;
 }

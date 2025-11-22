@@ -4,7 +4,8 @@ import com.resilient.payments.demo.adapter.GoogleOauthAdapter;
 import com.resilient.payments.demo.dao.OnboardingDao;
 import com.resilient.payments.demo.entity.User;
 import com.resilient.payments.demo.rest.api.response.UserAuthorizationResponse;
-import com.resilient.payments.demo.service.OnboardingService;
+import com.resilient.payments.demo.service.GoogleOauthService;
+import com.resilient.payments.demo.util.JwtUtil;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-public class OnboardingServiceImpl implements OnboardingService {
+public class GoogleOauthServiceImpl implements GoogleOauthService {
 
   @Autowired UserDetailsService userDetailsService;
 
@@ -25,18 +26,26 @@ public class OnboardingServiceImpl implements OnboardingService {
 
   @Autowired PasswordEncoder passwordEncoder;
 
+  @Autowired JwtUtil jwtUtil;
+
   @Override
   public UserAuthorizationResponse authorizeUser(String authCode) {
+    UserAuthorizationResponse userAuthorizationResponse = null;
 
     try {
       String accessToken = googleOauthAdapter.exchangeAuthCodeForAccessToken(authCode);
       String email = googleOauthAdapter.getUserInfoFromGoogle(accessToken);
       validateOrRegisterUser(email);
+      String onboardingAccessToken = jwtUtil.generateToken(email);
+      userAuthorizationResponse = new UserAuthorizationResponse();
+      userAuthorizationResponse.setUserName(email);
+      userAuthorizationResponse.setAccessToken(onboardingAccessToken);
+
     } catch (Exception ex) {
       log.error("Exception occurred while authorizing user: {}", ex.getMessage());
     }
 
-    return null;
+    return userAuthorizationResponse;
   }
 
   private void validateOrRegisterUser(String email) {
